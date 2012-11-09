@@ -1,0 +1,136 @@
+#include <iostream>
+#include <string>
+#include <cstring>
+//#include <iomanip>
+//#include <fstream>
+
+using namespace std;
+
+#include "movement.h"
+
+#define NUM 64
+
+string getCommand(string input);
+string processCommand(string command);
+void gameLoop();
+//string splitstring(char c[]);//inline
+
+bool quit=false;
+char userInput[64];
+char * command1,* command2,* command3;
+
+void splitString(char c[])
+{
+	char firstWord[NUM] = " ";
+	char secondWord[NUM] = " ";
+	char thirdWord[NUM] = " ";
+
+	for(int count = 0; c[count] != '\0'; count++){
+		c[count] = tolower(c[count]);
+	}
+
+	for(int i = 0; i < NUM;i++)
+	{
+		firstWord[i] = c[i];
+
+		if(c[i + 1] == ' ')
+		{
+			for(int r = i + 2;r < NUM;r++)
+			{
+				secondWord[r - (i + 2)] = c[r];
+
+				if(c[r + 1] == ' ')
+				{
+					for(int q = r + 2; q < NUM;q++)
+					{
+						thirdWord[q - (r + 2)] = c[q];
+					}
+					r = NUM;
+				}
+			}
+			i = NUM;
+		}
+	}	
+	command1=firstWord;
+	command2=secondWord;
+	command3=thirdWord;
+}
+
+int main(int argc, void *argv[]){
+	string inputString;
+	char * s;
+
+	initialise();
+	gameLoop();
+}
+
+void gameLoop(){
+	string userCommand;
+
+	while(!quit){
+		userCommand = getCommand("Enter: ");
+		processCommand(userCommand);
+	}
+}
+
+string getCommand(string input){
+	//string command;
+	char * command;
+	bool waiting = true;
+
+	while(waiting){
+		cout<<input;
+		//getline(cin, command);
+		command = gets(userInput);
+		//cin.getline(command,64);
+		splitString(command);
+
+		if(!stricmp(command1, "exit")||!stricmp(command1, "quit")){
+			quit=true;
+			return "";
+		}
+		if(!stricmp(command1, "north")||!stricmp(command1, "n"))
+			north();
+		else if(!stricmp(command1, "south")||!stricmp(command1, "s"))
+			south();
+		else if(!stricmp(command1, "east")||!stricmp(command1, "e"))
+			east();
+		else if(!stricmp(command1, "west")||!stricmp(command1, "w"))
+			west();
+		else if(!stricmp(command1, "move")||!stricmp(command1, "walk")||!stricmp(command1, "go")){
+			if(!stricmp(command2, "north")||!stricmp(command2, "n"))
+				north();
+			else if(!stricmp(command2, "south")||!stricmp(command2, "s"))
+				south();
+			else if(!stricmp(command2, "east")||!stricmp(command2, "e"))
+				east();
+			else if(!stricmp(command2, "west")||!stricmp(command2, "w"))
+				west();
+			else if(!stricmp(command2, "down")||!stricmp(command2, "d")){}
+				//TODO make the player move down
+			else if(!stricmp(command2, "up")||!stricmp(command2, "u")){}
+				//TODO make the player move up
+			else
+				cout<<"Where would you like to move?\n";
+		}
+		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i")){}
+			//TODO open inventory
+		else if(!stricmp(command1, "open")||!stricmp(command1, "o")){
+			if(!stricmp(command1, "door")){}
+			else if(!stricmp(command1, "window")){}
+			else if(!stricmp(command1, "box")){}
+			else if(!stricmp(command1, "drawer")){}
+			else
+				cout<<"what would you like to open?";
+		}
+			
+		else
+			cout<<"Sorry i didn't understand what you entered.\n";
+	}
+	//system("pause");
+	return command;
+}
+
+string processCommand(string userCommand){
+	return ("");
+}
