@@ -1,3 +1,6 @@
+//E.M.P
+//Created by Fith Gateway Games
+
 #include <iostream>
 #include <string>
 #include <cstring>
@@ -13,6 +16,7 @@ using namespace std;
 string getCommand(string input);
 string processCommand(string command);
 void gameLoop();
+void logo();
 //string splitstring(char c[]);//inline
 
 bool quit=false;
@@ -54,6 +58,16 @@ void splitString(char c[])
 	command1=firstWord;
 	command2=secondWord;
 	command3=thirdWord;
+	/*int s1,s2,s3;
+	s1 = strlen(command1);
+	s2 = strlen(command2);
+	s3 = strlen(command3);
+	strncpy_s(firstWord,command1,s1);
+	strncpy_s(secondWord,command2,s2);
+	strncpy_s(thirdWord,command3,s3);*/
+
+	cout<<firstWord<<endl;
+	cout<<command1<<endl;
 }
 
 int main(int argc, void *argv[]){
@@ -62,6 +76,9 @@ int main(int argc, void *argv[]){
 	char * s;
 
 	system("color 0a");
+	logo();
+	system("pause");
+	system("cls");
 	cout<<"Welcome to E.M.P.\n"
 		<<endl
 		<<"-Start\n"
@@ -90,7 +107,7 @@ int main(int argc, void *argv[]){
 			<<"Copyright © Fifth Gateway Studio 2012\n";
 		system("pause");
 		system("cls");
-		goto mainMenu;
+		goto mainMenu; //returns the player to the main menu screen.
 	}
 	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
 		exit(1);
@@ -157,6 +174,10 @@ string getCommand(string input){
 			else
 				cout<<"what would you like to open?";
 		}
+		else if(!stricmp(command1, "give")){}
+			//TODO give itenms
+		else if(!stricmp(command1, "punch")){}
+			//TODO punch someone
 			
 		else
 			cout<<"Sorry i didn't understand what you entered.\n";
@@ -167,4 +188,20 @@ string getCommand(string input){
 
 string processCommand(string userCommand){
 	return ("");
+}
+
+void logo(){
+	cout<<"  ____| _)   _|  |    |                               \n"
+		<<"  |      |  |    __|  __ \\                            \n"
+		<<"  __|    |  __|  |    | | |                           \n"
+		<<" _|     _| _|   \\__| _| |_|                           \n"
+		<<"   ___|         |                                     \n"
+		<<"  |       _\` |  __|   _ \\ \\ \\  \\   /  _\` |  |   |     \n"
+		<<"  |   |  (   |  |     __/  \\ \\  \\ /  (   |  |   |     \n"
+		<<" \\____| \\__,_| \\__| \\___|   \\_/\\_/  \\__,_| \\__, |     \n"
+		<<"   ___|                                    ____/      \n"
+		<<"  |       _\` |  __ \`__ \\    _ \\   __|                 \n"
+		<<"  |   |  (   |  |   |   |   __/ \\__ \\                 \n"
+		<<" \\____| \\__,_| _|  _|  _| \\___| ____/                 \n";
+                                       
 }
