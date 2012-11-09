@@ -58,16 +58,21 @@ void splitString(char c[])
 	command1=firstWord;
 	command2=secondWord;
 	command3=thirdWord;
+	
+	//TODO fix this! it is the more propper way 
 	/*int s1,s2,s3;
 	s1 = strlen(command1);
 	s2 = strlen(command2);
 	s3 = strlen(command3);
 	strncpy_s(firstWord,command1,s1);
 	strncpy_s(secondWord,command2,s2);
-	strncpy_s(thirdWord,command3,s3);*/
+	strncpy_s(thirdWord,command3,s3);
+	firstWord[s1+1]='\0'; 
+	secondWord[s2+1]='\0';
+	thirdWord[s3+1]='\0';
 
 	cout<<firstWord<<endl;
-	cout<<command1<<endl;
+	cout<<command1<<endl;*/
 }
 
 int main(int argc, void *argv[]){
@@ -87,7 +92,7 @@ int main(int argc, void *argv[]){
 		<<"-Exit\n";
 	char * command;
 	command = gets(userInput);
-	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")){
+	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")){
 		initialise();
 		gameLoop();
 	}
@@ -191,17 +196,23 @@ string processCommand(string userCommand){
 }
 
 void logo(){
-	cout<<"  ____| _)   _|  |    |                               \n"
-		<<"  |      |  |    __|  __ \\                            \n"
-		<<"  __|    |  __|  |    | | |                           \n"
-		<<" _|     _| _|   \\__| _| |_|                           \n"
-		<<"   ___|         |                                     \n"
-		<<"  |       _\` |  __|   _ \\ \\ \\  \\   /  _\` |  |   |     \n"
-		<<"  |   |  (   |  |     __/  \\ \\  \\ /  (   |  |   |     \n"
-		<<" \\____| \\__,_| \\__| \\___|   \\_/\\_/  \\__,_| \\__, |     \n"
-		<<"   ___|                                    ____/      \n"
-		<<"  |       _\` |  __ \`__ \\    _ \\   __|                 \n"
-		<<"  |   |  (   |  |   |   |   __/ \\__ \\                 \n"
-		<<" \\____| \\__,_| _|  _|  _| \\___| ____/                 \n";
+	cout<<" ______   __     ______   ______   __  __  \n"
+		<<"/\\  ___\\ /\\ \\   /\\  ___\\ /\\__  _\\ /\\ \\_\\ \\  \n"
+		<<"\\ \\  __\\ \\ \\ \\  \\ \\  __\\ \\/_/\\ \\/ \\ \\  __ \\  \n"
+		<<" \\ \\_\\    \\ \\_\\  \\ \\_\\      \\ \\_\\  \\ \\_\\ \\_\\  \n"
+		<<"  \\/_/     \\/_/   \\/_/       \\/_/   \\/_/\\/_/  \n"
+		<<endl
+		<<" ______     ______     ______   ______     __     __     ______     __  __ \n"
+		<<"/\\  ___\\   /\\  __ \\   /\\__  _\\ /\\  ___\\   /\\ \\  _ \\ \\   /\\  __ \\   /\\ \\_\\ \\ \n"
+		<<"\\ \\ \\__ \\  \\ \\  __ \\  \\/_/\\ \\/ \\ \\  __\\   \\ \\ \\/ \".\\ \\  \\ \\  __ \\  \\ \\____ \\ \n"
+		<<" \\ \\_____\\  \\ \\_\\ \\_\\    \\ \\_\\  \\ \\_____\\  \\ \\__/\".~\\_\\  \\ \\_\\ \\_\\  \\/\\_____\\ \n"
+		<<"  \\/_____/   \\/_/\\/_/     \\/_/   \\/_____/   \\/_/   \\/_/   \\/_/\\/_/   \\/_____/ \n"
+		<<endl
+		<<" ______     ______     __    __     ______     ______  \n"
+		<<"/\\  ___\\   /\\  __ \\   /\\ \"-./  \\   /\\  ___\\   /\\  ___\\  \n"
+		<<"\\ \\ \\__ \\  \\ \\  __ \\  \\ \\ \\-./\\ \\  \\ \\  __\\   \\ \\___  \\ \n"
+		<<" \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\ \n"
+		<<"  \\/_____/   \\/_/\\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/  \n"
+		<<endl;
                                        
 }
