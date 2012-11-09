@@ -57,11 +57,45 @@ void splitString(char c[])
 }
 
 int main(int argc, void *argv[]){
+	mainMenu:
 	string inputString;
 	char * s;
 
-	initialise();
-	gameLoop();
+	system("color 0a");
+	cout<<"Welcome to E.M.P.\n"
+		<<endl
+		<<"-Start\n"
+		<<"-Controls\n"
+		<<"-Credits\n"
+		<<"-Exit\n";
+	char * command;
+	command = gets(userInput);
+	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")){
+		initialise();
+		gameLoop();
+	}
+	else if(!stricmp(command, "credits")||!stricmp(command, "credit")||!stricmp(command, "c")){
+		system("cls");
+		cout<<"In loving memory of Edward Martins-Berki\n"
+			<<"September 10, 2012- November 2, 2012\n"
+			<<endl
+			<<"Thanks for playing!\n"
+			<<endl
+			<<"Lead Producer: Marc Evans\n"
+			<<"Lead Programmer: Eric Lemieux\n"
+			<<"Lead 2D Artist: Dakota Ohori\n"
+			<<"Lead Writer: Tristan Taylor\n"
+			<<"Lead Level Designer: Edward Martins-Berki\n"
+			<<endl
+			<<"Copyright © Fifth Gateway Studio 2012\n";
+		system("pause");
+		system("cls");
+		goto mainMenu;
+	}
+	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
+		exit(1);
+	}
+	return 0;
 }
 
 void gameLoop(){
