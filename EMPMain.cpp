@@ -4,12 +4,13 @@
 #include <iostream>
 #include <string>
 #include <cstring>
-//#include <iomanip>
-//#include <fstream>
+#include <fstream>
+#include <iomanip>
 
 using namespace std;
 
 #include "movement.h"
+//#include "processingFile.h"
 
 #define NUM 64
 
@@ -17,6 +18,8 @@ string getCommand(string input);
 string processCommand(string command);
 void gameLoop();
 void logo();
+void openFile();
+void mainMenu();
 //string splitstring(char c[]);//inline
 
 bool quit=false;
@@ -76,47 +79,8 @@ void splitString(char c[])
 }
 
 int main(int argc, void *argv[]){
-	mainMenu:
-	string inputString;
-	char * s;
-
-	system("color 0a");
-	logo();
-	system("pause");
-	system("cls");
-	cout<<"Welcome to E.M.P.\n"
-		<<endl
-		<<"-Start\n"
-		<<"-Controls\n"
-		<<"-Credits\n"
-		<<"-Exit\n";
-	char * command;
-	command = gets(userInput);
-	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")){
-		initialise();
-		gameLoop();
-	}
-	else if(!stricmp(command, "credits")||!stricmp(command, "credit")||!stricmp(command, "c")){
-		system("cls");
-		cout<<"In loving memory of Edward Martins-Berki\n"
-			<<"September 10, 2012- November 2, 2012\n"
-			<<endl
-			<<"Thanks for playing!\n"
-			<<endl
-			<<"Lead Producer: Marc Evans\n"
-			<<"Lead Programmer: Eric Lemieux\n"
-			<<"Lead 2D Artist: Dakota Ohori\n"
-			<<"Lead Writer: Tristan Taylor\n"
-			<<"Lead Level Designer: Edward Martins-Berki\n"
-			<<endl
-			<<"Copyright © Fifth Gateway Studio 2012\n";
-		system("pause");
-		system("cls");
-		goto mainMenu; //returns the player to the main menu screen.
-	}
-	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
-		exit(1);
-	}
+	mainMenu();
+	//openFile();
 	return 0;
 }
 
@@ -169,6 +133,10 @@ string getCommand(string input){
 			else
 				cout<<"Where would you like to move?\n";
 		}
+
+		if(!stricmp(command1, "look")||!stricmp(command1, "l")){
+			checkPos();
+		}
 		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i")){}
 			//TODO open inventory
 		else if(!stricmp(command1, "open")||!stricmp(command1, "o")){
@@ -215,4 +183,81 @@ void logo(){
 		<<"  \\/_____/   \\/_/\\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/  \n"
 		<<endl;
                                        
+}
+
+void openFile(){
+	string identifier;
+	string dataLine;
+
+	ifstream itemFile("items.emp");
+
+	if(!itemFile){
+		cout<<"error opening the items.data file\n";
+	}
+
+	while(!itemFile.eof()){
+		char ID[16],itemName[16],description[256];
+		itemFile>>ID>>itemName>>description;
+
+		//Replacing all of the underscores in the item file with spaces so that it is easier to read.
+		for(int i=0;i<strlen(itemName);i++){
+			if(itemName[i]=='_')
+				itemName[i]=' ';
+		}
+		for(int i=0;i<strlen(description);i++){
+			if(description[i]=='_')
+				description[i]=' ';
+		}
+
+		if(!strcmp("itemid_02",ID)){
+			cout<<"you have "<<itemName<<endl;
+			cout<<"Description: "<<description<<endl;
+		}
+	}
+
+	system("pause");
+}
+
+void mainMenu(){
+	mainMenu:
+	string inputString;
+	char * s;
+	system("color 0a");
+	logo();
+	system("pause");
+	system("cls");
+	cout<<"Welcome to E.M.P.\n"
+		<<endl
+		<<"-Start\n"
+		<<"-Controls\n"
+		<<"-Credits\n"
+		<<"-Exit\n";
+
+	char * command;
+	command = gets(userInput);
+	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")){
+		initialise();
+		gameLoop();
+	}
+	else if(!stricmp(command, "credits")||!stricmp(command, "credit")||!stricmp(command, "c")){
+		system("cls");
+		cout<<"In loving memory of Edward Martins-Berki\n"
+			<<"September 10, 2012- November 2, 2012\n"
+			<<endl
+			<<"Thanks for playing!\n"
+			<<endl
+			<<"Lead Producer: Marc Evans\n"
+			<<"Lead Programmer: Eric Lemieux\n"
+			<<"Lead 2D Artist: Dakota Ohori\n"
+			<<"Lead Writer: Tristan Taylor\n"
+			<<"Lead Level Designer: Edward Martins-Berki\n"
+			<<endl
+			<<"Copyright © Fifth Gateway Studio 2012\n";
+		system("pause");
+		system("cls");
+		goto mainMenu; //returns the player to the main menu screen.
+	}
+	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
+		exit(1);
+	}
 }
