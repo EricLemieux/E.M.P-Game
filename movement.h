@@ -10,5 +10,6 @@ void north();
 void south();
 void east();
 void west();
+void checkPos();
 
 #endif 
