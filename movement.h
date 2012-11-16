@@ -12,4 +12,8 @@ void east();
 void west();
 void checkPos();
 
+void drawArray();
+
+void giveBox();
+
 #endif 

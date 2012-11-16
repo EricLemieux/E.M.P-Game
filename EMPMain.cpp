@@ -10,7 +10,6 @@
 using namespace std;
 
 #include "movement.h"
-//#include "processingFile.h"
 
 #define NUM 64
 
@@ -20,11 +19,12 @@ void gameLoop();
 void logo();
 void openFile();
 void mainMenu();
-//string splitstring(char c[]);//inline
+void inventory();
 
 bool quit=false;
 char userInput[64];
 char * command1,* command2,* command3;
+bool playerInventory[64];
 
 void splitString(char c[])
 {
@@ -79,6 +79,11 @@ void splitString(char c[])
 }
 
 int main(int argc, void *argv[]){
+	system("color 0a");
+
+	for(int i=0;i<64;i++)
+		playerInventory[i]=false;
+
 	mainMenu();
 	//openFile();
 	return 0;
@@ -134,11 +139,13 @@ string getCommand(string input){
 				cout<<"Where would you like to move?\n";
 		}
 
-		if(!stricmp(command1, "look")||!stricmp(command1, "l")){
-			checkPos();
-		}
-		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i")){}
-			//TODO open inventory
+		if(!stricmp(command1, "look")||!stricmp(command1, "l"))
+			drawArray();
+			//checkPos();
+		if(!stricmp(command1, "clear"))
+			system("cls");
+		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i"))
+			inventory();
 		else if(!stricmp(command1, "open")||!stricmp(command1, "o")){
 			if(!stricmp(command1, "door")){}
 			else if(!stricmp(command1, "window")){}
@@ -152,10 +159,11 @@ string getCommand(string input){
 		else if(!stricmp(command1, "punch")){}
 			//TODO punch someone
 			
-		else
-			cout<<"Sorry i didn't understand what you entered.\n";
+		else{}
+			//cout<<"Sorry i didn't understand what you entered.\n";
 	}
 	//system("pause");
+	cout<<endl;
 	return command;
 }
 
@@ -164,25 +172,11 @@ string processCommand(string userCommand){
 }
 
 void logo(){
-	cout<<" ______   __     ______   ______   __  __  \n"
-		<<"/\\  ___\\ /\\ \\   /\\  ___\\ /\\__  _\\ /\\ \\_\\ \\  \n"
-		<<"\\ \\  __\\ \\ \\ \\  \\ \\  __\\ \\/_/\\ \\/ \\ \\  __ \\  \n"
-		<<" \\ \\_\\    \\ \\_\\  \\ \\_\\      \\ \\_\\  \\ \\_\\ \\_\\  \n"
-		<<"  \\/_/     \\/_/   \\/_/       \\/_/   \\/_/\\/_/  \n"
-		<<endl
-		<<" ______     ______     ______   ______     __     __     ______     __  __ \n"
-		<<"/\\  ___\\   /\\  __ \\   /\\__  _\\ /\\  ___\\   /\\ \\  _ \\ \\   /\\  __ \\   /\\ \\_\\ \\ \n"
-		<<"\\ \\ \\__ \\  \\ \\  __ \\  \\/_/\\ \\/ \\ \\  __\\   \\ \\ \\/ \".\\ \\  \\ \\  __ \\  \\ \\____ \\ \n"
-		<<" \\ \\_____\\  \\ \\_\\ \\_\\    \\ \\_\\  \\ \\_____\\  \\ \\__/\".~\\_\\  \\ \\_\\ \\_\\  \\/\\_____\\ \n"
-		<<"  \\/_____/   \\/_/\\/_/     \\/_/   \\/_____/   \\/_/   \\/_/   \\/_/\\/_/   \\/_____/ \n"
-		<<endl
-		<<" ______     ______     __    __     ______     ______  \n"
-		<<"/\\  ___\\   /\\  __ \\   /\\ \"-./  \\   /\\  ___\\   /\\  ___\\  \n"
-		<<"\\ \\ \\__ \\  \\ \\  __ \\  \\ \\ \\-./\\ \\  \\ \\  __\\   \\ \\___  \\ \n"
-		<<" \\ \\_____\\  \\ \\_\\ \\_\\  \\ \\_\\ \\ \\_\\  \\ \\_____\\  \\/\\_____\\ \n"
-		<<"  \\/_____/   \\/_/\\/_/   \\/_/  \\/_/   \\/_____/   \\/_____/  \n"
-		<<endl;
-                                       
+	string temp;
+	ifstream logo("Assets/logo.emp");
+	while(getline(logo, temp)){
+		cout<<temp<<endl;
+	}                           
 }
 
 void openFile(){
@@ -192,7 +186,7 @@ void openFile(){
 	ifstream itemFile("items.emp");
 
 	if(!itemFile){
-		cout<<"error opening the items.data file\n";
+		cout<<"error opening the items.emp file\n";
 	}
 
 	while(!itemFile.eof()){
@@ -222,37 +216,34 @@ void mainMenu(){
 	mainMenu:
 	string inputString;
 	char * s;
-	system("color 0a");
+	
 	logo();
 	system("pause");
 	system("cls");
-	cout<<"Welcome to E.M.P.\n"
-		<<endl
-		<<"-Start\n"
-		<<"-Controls\n"
-		<<"-Credits\n"
-		<<"-Exit\n";
+
+	string temp;
+	ifstream mainMenu("Assets/mainMenu.emp");
+	while(getline(mainMenu, temp)){
+		cout<<temp<<endl;
+	}
 
 	char * command;
 	command = gets(userInput);
 	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")){
 		initialise();
+		system("cls");
+		//start of game, link to opening description.
 		gameLoop();
 	}
 	else if(!stricmp(command, "credits")||!stricmp(command, "credit")||!stricmp(command, "c")){
 		system("cls");
-		cout<<"In loving memory of Edward Martins-Berki\n"
-			<<"September 10, 2012- November 2, 2012\n"
-			<<endl
-			<<"Thanks for playing!\n"
-			<<endl
-			<<"Lead Producer: Marc Evans\n"
-			<<"Lead Programmer: Eric Lemieux\n"
-			<<"Lead 2D Artist: Dakota Ohori\n"
-			<<"Lead Writer: Tristan Taylor\n"
-			<<"Lead Level Designer: Edward Martins-Berki\n"
-			<<endl
-			<<"Copyright © Fifth Gateway Studio 2012\n";
+
+		string temp;
+		ifstream credits("Assets/credits.emp");
+		while(getline(credits, temp)){
+			cout<<temp<<endl;
+		}
+
 		system("pause");
 		system("cls");
 		goto mainMenu; //returns the player to the main menu screen.
@@ -260,4 +251,34 @@ void mainMenu(){
 	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
 		exit(1);
 	}
+}
+
+void inventory(){
+	cout<<"In your inventory you have:\n";
+	playerInventory[0]=true;
+
+	char comparingID[16]="itemID_XX";
+	ifstream itemFile("Assets/items.emp");
+	
+	while(!itemFile.eof()){
+		char ID[16],itemName[16],description[256];
+		itemFile>>ID>>itemName>>description;
+		
+		for(int i=0;i<5;i++)
+			if(playerInventory[i]==true){
+				comparingID[7]='0';		//comparingID[7]=i+48;
+				comparingID[8]=i+48;	//comparingID[8]=i+49;
+				
+				//cout<<"1"<<comparingID<<endl;
+				//cout<<"2"<<ID<<endl;
+				if(!strcmp(comparingID,ID)){
+					cout<<"An "<<itemName<<endl;
+					//cout<<"Description: "<<description<<endl;
+				}
+			}
+	}
+}
+
+void giveBox(){
+	playerInventory[1]=true;
 }
