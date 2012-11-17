@@ -20,14 +20,15 @@ void logo();
 void openFile();
 void mainMenu();
 void inventory();
+void controls();
+void describeItem(char item[16]);
 
 bool quit=false;
 char userInput[64];
-char * command1,* command2,* command3;
+char command1[NUM], command2[NUM], command3[NUM];
 bool playerInventory[64];
 
-void splitString(char c[])
-{
+void splitString(char c[]){
 	char firstWord[NUM] = " ";
 	char secondWord[NUM] = " ";
 	char thirdWord[NUM] = " ";
@@ -42,25 +43,35 @@ void splitString(char c[])
 
 		if(c[i + 1] == ' ')
 		{
-			for(int r = i + 2;r < NUM;r++)
+			for(int j = i + 2;j < NUM;j++)
 			{
-				secondWord[r - (i + 2)] = c[r];
+				secondWord[j - (i + 2)] = c[j];
 
-				if(c[r + 1] == ' ')
+				if(c[j + 1] == ' ')
 				{
-					for(int q = r + 2; q < NUM;q++)
+					for(int q = j + 2; q < NUM;q++)
 					{
-						thirdWord[q - (r + 2)] = c[q];
+						thirdWord[q - (j + 2)] = c[q];
 					}
-					r = NUM;
+					j = NUM;
 				}
 			}
 			i = NUM;
 		}
 	}	
-	command1=firstWord;
-	command2=secondWord;
-	command3=thirdWord;
+	for(int i=0;i<=strlen(firstWord);i++){
+		command1[i]=firstWord[i];
+		command1[i+1]='\0';
+	}
+	for(int i=0;i<=strlen(secondWord);i++){
+		command2[i]=secondWord[i];
+		command2[i+1]='\0';
+	}
+	for(int i=0;i<=strlen(thirdWord);i++){
+		command3[i]=thirdWord[i];
+		command3[i+1]='\0';
+	}
+	
 	
 	//TODO fix this! it is the more propper way 
 	/*int s1,s2,s3;
@@ -85,7 +96,6 @@ int main(int argc, void *argv[]){
 		playerInventory[i]=false;
 
 	mainMenu();
-	//openFile();
 	return 0;
 }
 
@@ -99,16 +109,14 @@ void gameLoop(){
 }
 
 string getCommand(string input){
-	//string command;
 	char * command;
 	bool waiting = true;
 
 	while(waiting){
 		cout<<input;
-		//getline(cin, command);
 		command = gets(userInput);
-		//cin.getline(command,64);
 		splitString(command);
+
 
 		if(!stricmp(command1, "exit")||!stricmp(command1, "quit")){
 			quit=true;
@@ -122,6 +130,10 @@ string getCommand(string input){
 			east();
 		else if(!stricmp(command1, "west")||!stricmp(command1, "w"))
 			west();
+		else if(!stricmp(command1, "down")||!stricmp(command1, "d"))
+				changeLevel('-');
+		else if(!stricmp(command1, "up")||!stricmp(command1, "u"))
+				changeLevel('+');
 		else if(!stricmp(command1, "move")||!stricmp(command1, "walk")||!stricmp(command1, "go")){
 			if(!stricmp(command2, "north")||!stricmp(command2, "n"))
 				north();
@@ -131,19 +143,22 @@ string getCommand(string input){
 				east();
 			else if(!stricmp(command2, "west")||!stricmp(command2, "w"))
 				west();
-			else if(!stricmp(command2, "down")||!stricmp(command2, "d")){}
-				//TODO make the player move down
-			else if(!stricmp(command2, "up")||!stricmp(command2, "u")){}
-				//TODO make the player move up
+			else if(!stricmp(command2, "down")||!stricmp(command2, "d")){
+				changeLevel('-');
+			}
+			else if(!stricmp(command2, "up")||!stricmp(command2, "u"))
+				changeLevel('+');
 			else
 				cout<<"Where would you like to move?\n";
 		}
 
-		if(!stricmp(command1, "look")||!stricmp(command1, "l"))
-			drawArray();
-			//checkPos();
-		if(!stricmp(command1, "clear"))
+		else if(!stricmp(command1, "look")||!stricmp(command1, "l"))
+			checkPos();
+			//drawArray();
+		else if(!stricmp(command1, "clear"))
 			system("cls");
+		else if(!stricmp(command1, "help")||!stricmp(command1, "controls"))
+			controls();
 		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i"))
 			inventory();
 		else if(!stricmp(command1, "open")||!stricmp(command1, "o")){
@@ -154,16 +169,25 @@ string getCommand(string input){
 			else
 				cout<<"what would you like to open?";
 		}
+		else if(!stricmp(command1,"describe")||!stricmp(command1,"view")){
+			cout<<"1" <<command2<<endl;
+			describeItem(command2);
+		}
 		else if(!stricmp(command1, "give")){}
 			//TODO give itenms
 		else if(!stricmp(command1, "punch")){}
 			//TODO punch someone
 			
-		else{}
-			//cout<<"Sorry i didn't understand what you entered.\n";
+		else
+			cout<<"Sorry i didn't understand what you entered.\n";
 	}
-	//system("pause");
+
 	cout<<endl;
+	for(int i=0;i<NUM;i++){
+		command1[i]='\0';
+		command2[i]='\0';
+		command3[i]='\0';
+	}
 	return command;
 }
 
@@ -179,6 +203,7 @@ void logo(){
 	}                           
 }
 
+//Not used.
 void openFile(){
 	string identifier;
 	string dataLine;
@@ -213,14 +238,13 @@ void openFile(){
 }
 
 void mainMenu(){
-	mainMenu:
 	string inputString;
 	char * s;
 	
 	logo();
 	system("pause");
 	system("cls");
-
+	mainMenu:
 	string temp;
 	ifstream mainMenu("Assets/mainMenu.emp");
 	while(getline(mainMenu, temp)){
@@ -251,6 +275,12 @@ void mainMenu(){
 	else if(!stricmp(command, "exit")||!stricmp(command, "quit")||!stricmp(command, "e")||!stricmp(command, "q")){
 		exit(1);
 	}
+	else if(!stricmp(command, "help")||!stricmp(command, "controls")){
+		controls();
+		system("pause");
+		system("cls");
+		goto mainMenu;
+	}
 }
 
 void inventory(){
@@ -264,13 +294,10 @@ void inventory(){
 		char ID[16],itemName[16],description[256];
 		itemFile>>ID>>itemName>>description;
 		
-		for(int i=0;i<5;i++)
+		for(int i=0;i<30;i++)
 			if(playerInventory[i]==true){
 				comparingID[7]='0';		//comparingID[7]=i+48;
 				comparingID[8]=i+48;	//comparingID[8]=i+49;
-				
-				//cout<<"1"<<comparingID<<endl;
-				//cout<<"2"<<ID<<endl;
 				if(!strcmp(comparingID,ID)){
 					cout<<"An "<<itemName<<endl;
 					//cout<<"Description: "<<description<<endl;
@@ -279,6 +306,29 @@ void inventory(){
 	}
 }
 
+void describeItem(char item[16]){
+	cout<<"2" <<item<<endl;
+	
+	ifstream itemFile("Assets/items.emp");
+	while(!itemFile.eof()){
+		char ID[16],itemName[16],description[256];
+		itemFile>>ID>>itemName>>description;
+		
+		for(int i=0;i<30;i++)
+			if(!strcmp(item,itemName)){
+				cout<<"Description: "<<description<<endl;
+			}
+	}
+}
+
 void giveBox(){
 	playerInventory[1]=true;
+}
+
+void controls(){
+	string temp;
+	ifstream controls("Assets/controls.emp");
+	while(getline(controls, temp)){
+		cout<<temp<<endl;
+	}
 }

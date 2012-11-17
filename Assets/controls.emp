@@ -1,0 +1,11 @@
+Directional Movements: North, South, East West. 
+Vertical Movements-Up, Down.
+Examine(item)- used to examine objects.
+Use/open(item)- used to use objects.
+Look- used to look around, showing what the room you are in looks like.
+Inventory- used to bring up a list of items that you currently have.
+Pick up(item)- used to pick up items.
+Drop(item)- used to drop items
+Tell(Name)- used to converse with other NPC’s.
+Help- used to contact Anthony for helpful hints
+Give(Item)- used to give an item to someone.

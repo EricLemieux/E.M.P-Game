@@ -7,6 +7,7 @@ using namespace std;
 #include "movement.h"
 
 int playerPos[16][16];
+int level=1;
 
 void initialise(){
 	/*for(int i=0;i<5;i++)
@@ -15,9 +16,10 @@ void initialise(){
 	playerPos[1][0]=1;//initialises the player's starting position.
 	cout<<"initialised\n";*/
 
-	
-	string tempStr;
-	ifstream map1("Assets/Levels/level1.emp");
+	char load[32]="Assets/Levels/levelX.emp";
+	load[19]=level+48;
+
+	ifstream map1(load);
 	while(!map1.eof()){
 		for(int i=0;i<16;i++){	
 			for(int j=0;j<16;j++){
@@ -32,9 +34,6 @@ void initialise(){
 					playerPos[i][j]=1;
 				else if(temp=='C')
 					playerPos[i][j]=5;
-				cout<<i<<"-"<<j
-					<<temp<<" "
-					<<playerPos[i][j]<<endl;
 			}
 		}
 	}
@@ -47,7 +46,7 @@ void north(){
 						playerPos[i][j]=0;
 						i=i-1;
 						playerPos[i][j]=1;
-						cout<<"Player is at "<<i<<" "<<j<<endl;
+						//cout<<"Player is at "<<i<<" "<<j<<endl;
 						//lvl1GameLoop();
 						break;
 					}
@@ -63,7 +62,7 @@ void south(){
 					playerPos[i][j]=0;
 					i=i+1;
 					playerPos[i][j]=1;
-					cout<<"Player is at "<<i<<" "<<j<<endl;
+					//cout<<"Player is at "<<i<<" "<<j<<endl;
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i+1][j]==9)
@@ -78,7 +77,7 @@ void east(){
 						playerPos[i][j]=0;
 						j=j+1;
 						playerPos[i][j]=1;
-						cout<<"Player is at "<<i<<" "<<j<<endl;
+						//cout<<"Player is at "<<i<<" "<<j<<endl;
 						break;
 					}
 					else if(playerPos[i][j]==1 && playerPos[i][j+1]==9)
@@ -93,7 +92,7 @@ void west(){
 					playerPos[i][j]=0;
 					j=j-1;
 					playerPos[i][j]=1;
-					cout<<"Player is at "<<i<<" "<<j<<endl;
+					//cout<<"Player is at "<<i<<" "<<j<<endl;
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i][j-1]==9)
@@ -112,7 +111,6 @@ void checkPos(){
 	if(!roomFile){
 		cout<<"error opening the items.data file\n";
 	}
-	
 	while(!roomFile.eof()){
 		char ID[16],roomName[16],description[256];
 		roomFile>>ID>>roomName>>description;
@@ -122,8 +120,8 @@ void checkPos(){
 				description[i]=' ';
 		}
 
-		for(int i=0;i<5;i++)
-			for(int j=0;j<5;j++)
+		for(int i=0;i<16;i++)
+			for(int j=0;j<16;j++)
 				if(playerPos[i][j]==1){
 					comparingID[7]=j+48;
 					comparingID[9]=i+48;
@@ -136,11 +134,18 @@ void checkPos(){
 	}
 }
 
+//Not being used.
 void drawArray(){
 	for(int i=0;i<16;i++)
 		for(int j=0;j<16;j++)
 			cout<<i<<"-"<<j<<" : "<<playerPos[i][j]<<endl;
 }
 
-
-//South and East are being bitches, not giving the propper error messages. The bitches!
+void changeLevel(char c){
+	if(c=='+')
+		level++;
+	else if(c=='-')
+		level--;
+	initialise();
+	cout<<"Level changed.\n";
+}

@@ -11,6 +11,7 @@ void south();
 void east();
 void west();
 void checkPos();
+void changeLevel(char c);
 
 void drawArray();
 
