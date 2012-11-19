@@ -142,10 +142,17 @@ void drawArray(){
 }
 
 void changeLevel(char c){
-	if(c=='+')
+	if(playerPos[7][7]==1 && level <5 && c=='+'){
 		level++;
-	else if(c=='-')
+		initialise();
+		cout<<"level changed.\n";
+	}
+	else if(playerPos[7][7]==1 && level>1 && level <5 && c=='-'){
 		level--;
-	initialise();
-	cout<<"Level changed.\n";
+		initialise();
+		cout<<"level changed.\n";
+	}
+	
+	else
+		cout<<"you cannot use the stairs right now.\n";
 }

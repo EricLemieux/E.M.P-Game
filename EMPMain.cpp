@@ -144,10 +144,10 @@ string getCommand(string input){
 			else if(!stricmp(command2, "west")||!stricmp(command2, "w"))
 				west();
 			else if(!stricmp(command2, "down")||!stricmp(command2, "d")){
-				changeLevel('-');
+					changeLevel('-');
 			}
 			else if(!stricmp(command2, "up")||!stricmp(command2, "u"))
-				changeLevel('+');
+					changeLevel('+');
 			else
 				cout<<"Where would you like to move?\n";
 		}
