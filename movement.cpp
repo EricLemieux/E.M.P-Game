@@ -13,8 +13,9 @@ bool firstRun=true;
 
 void initialise(){
 	//Initialising the players position using the map files.
-	char load[32]="Assets/Levels/levelX.emp";
+	char load[32]="Assets/Levels/levelX/levelX.emp";
 	load[19]=level+48;
+	load[26]=level+48;
 	
 	ifstream map1(load);
 	while(!map1.eof()){
@@ -42,8 +43,9 @@ void initialise(){
 	firstRun=false;
 	
 	//Loading the item map for the positions of the items at the begining of the game.
-	char loadItemMap[32]="Assets/Levels/itemMapX.emp";
-	loadItemMap[21]=level+48;
+	char loadItemMap[40]="Assets/Levels/levelX/itemMapX.emp";
+	loadItemMap[19]=level+48;
+	loadItemMap[28]=level+48;
 
 	for(int i=0;i<16;i++){	
 		for(int j=0;j<16;j++){
@@ -53,7 +55,7 @@ void initialise(){
 	
 	ifstream itemMap(loadItemMap);
 	if(!itemMap){
-		cout<<"error opening the file\n";
+		cout<<"error opening the item map file\n";
 	}
 	while(!itemMap.eof()){
 		for(int i=0;i<16;i++){	
@@ -63,10 +65,80 @@ void initialise(){
 				//TODO add all items by their ID tag
 				if(temp=='X')
 					itemPos[i][j]=0;
-				else if(temp=='G')
-					itemPos[i][j]=02;
-				else if(temp=='C')
+				else if(temp=='L')
+					itemPos[i][j]=1;
+				else if(temp=='P')
+					itemPos[i][j]=2;
+				else if(temp=='D')
+					itemPos[i][j]=3;
+				else if(temp=='l')
+					itemPos[i][j]=4;
+				else if(temp=='T')
+					itemPos[i][j]=5;
+				else if(temp=='S')
+					itemPos[i][j]=6;
+				else if(temp=='A')
+					itemPos[i][j]=7;
+				else if(temp=='a')
+					itemPos[i][j]=8;
+				else if(temp=='s')
+					itemPos[i][j]=9;
+				else if(temp=='B')
+					itemPos[i][j]=10;
+				else if(temp=='W')
 					itemPos[i][j]=11;
+				else if(temp=='$')
+					itemPos[i][j]=12;
+				else if(temp=='R')
+					itemPos[i][j]=13;
+				else if(temp=='C')
+					itemPos[i][j]=14;
+				else if(temp=='t')
+					itemPos[i][j]=15;
+				else if(temp=='F')
+					itemPos[i][j]=16;
+				else if(temp=='I')
+					itemPos[i][j]=17;
+				else if(temp=='i')
+					itemPos[i][j]=18;
+				else if(temp=='M')
+					itemPos[i][j]=19;
+				else if(temp=='w')
+					itemPos[i][j]=20;
+				else if(temp=='c')
+					itemPos[i][j]=21;
+				else if(temp=='d')
+					itemPos[i][j]=22;
+				else if(temp=='#')
+					itemPos[i][j]=23;
+				else if(temp=='O')
+					itemPos[i][j]=24;
+				else if(temp=='%')
+					itemPos[i][j]=25;
+				else if(temp=='Z')
+					itemPos[i][j]=26;
+				else if(temp=='b')
+					itemPos[i][j]=27;
+				else if(temp=='Y')
+					itemPos[i][j]=28;
+				else if(temp=='E')
+					itemPos[i][j]=29;
+				else if(temp=='!')
+					itemPos[i][j]=30;
+				else if(temp=='H')
+					itemPos[i][j]=31;
+				else if(temp=='G')
+					itemPos[i][j]=32;
+				else if(temp=='o')
+					itemPos[i][j]=33;
+				else if(temp=='h')
+					itemPos[i][j]=34;
+				else if(temp=='m')
+					itemPos[i][j]=35;
+				else if(temp=='e')
+					itemPos[i][j]=36;
+				else if(temp=='f')
+					itemPos[i][j]=37;
 			}
 		}
 	}
@@ -79,13 +151,13 @@ void north(){
 						playerPos[i][j]=0;
 						i=i-1;
 						playerPos[i][j]=1;
+						checkPos();
 						//cout<<"Player is at "<<i<<" "<<j<<endl;
 						//lvl1GameLoop();
 						break;
 					}
 					else if(playerPos[i][j]==1 && playerPos[i-1][j]==9)
 						cout<<"You cant go that way!\n";
-	checkPos();
 }
 
 void south(){
@@ -95,11 +167,11 @@ void south(){
 					playerPos[i][j]=0;
 					i=i+1;
 					playerPos[i][j]=1;
+					checkPos();
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i+1][j]==9)
 					cout<<"You cant go that way!\n";
-	checkPos();
 }
 
 void east(){
@@ -109,11 +181,11 @@ void east(){
 						playerPos[i][j]=0;
 						j=j+1;
 						playerPos[i][j]=1;
+						checkPos();
 						break;
 					}
 					else if(playerPos[i][j]==1 && playerPos[i][j+1]==9)
 						cout<<"You cant go that way!\n";
-	checkPos();
 }
 
 void west(){
@@ -123,47 +195,50 @@ void west(){
 					playerPos[i][j]=0;
 					j=j-1;
 					playerPos[i][j]=1;
+					checkPos();
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i][j-1]==9)
 					cout<<"You cant go that way!\n";
-	checkPos();
 }
 
 int checkPos(){
-	
-	if(playerPos[3][0]==1)
-		giveBox();
-
-	char comparingID[16]="roomid_X-X";
-	ifstream roomFile("Assets/rooms.emp");
-	
+	char comparingID[16]="roomX_X_X";
+	char fileName[40]="Assets/Levels/LevelX/levelXrooms.emp";
+	fileName[19]=level+48;
+	fileName[26]=level+48;
+	ifstream roomFile(fileName);
 	if(!roomFile){
 		cout<<"error opening the items.data file\n";
 	}
-	while(!roomFile.eof()){
-		char ID[16],roomName[16],description[256];
-		roomFile>>ID>>roomName>>description;
-
-		for(int i=0;i<strlen(description);i++){
-			if(description[i]=='_')
-				description[i]=' ';
-		}
-
-		for(int i=0;i<16;i++)
+	for(int i=0;i<16;i++)
 			for(int j=0;j<16;j++)
 				if(playerPos[i][j]==1){
-					comparingID[7]=j+48;
-					comparingID[9]=i+48;
-					if(!strcmp(comparingID,ID)){
+					comparingID[4]=level+48;
+					comparingID[6]=i+48;
+					comparingID[8]=j+48;
+				}
+
+	cout<<comparingID<<endl;
+	while(!roomFile.eof()){
+		char ID[16],roomName[32],description[512];
+		roomFile>>ID>>roomName>>description;
+
+		NoSpaces(description);
+
+		if(!strcmp(comparingID,ID)){
 						cout<<"you are in "<<roomName<<endl;
 						cout<<"Description: "<<description<<endl;
 					}
-					if(itemPos[i][j]!=0){
-						return itemPos[i][j];
-					}
-				}
 	}
+	//loops through the player position array and checks to see if an item and the player are in the same location.
+	for(int i=0;i<16;i++)
+		for(int j=0;j<16;j++)
+			if(playerPos[i][j]==1){					
+				if(itemPos[i][j]!=0){
+					return itemPos[i][j];//Returns back what item the player is standing on.
+				}
+			}
 	return 0;
 }
 
@@ -198,4 +273,11 @@ void drawMap(){
 	while(getline(controls, temp)){
 		cout<<temp<<endl;
 	}
+}
+
+bool getTalkPos(int a,int b,int c){
+	if(a==1 && b==2 && c==6)
+		return true;
+	else 
+		return false;
 }

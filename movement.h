@@ -11,6 +11,8 @@ void west();
 int checkPos();
 void changeLevel(char c);
 void drawMap();
+bool getTalkPos(int a,int b, int c);
+void NoSpaces(char thing[]);
 
 void drawArray();
 
