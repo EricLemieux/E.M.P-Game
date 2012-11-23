@@ -22,6 +22,7 @@ void mainMenu();
 void inventory();
 void controls();
 void describeItem(char item[16]);
+void dropItem(char item[16]);
 
 bool quit=false;
 char userInput[64];
@@ -94,6 +95,7 @@ int main(int argc, void *argv[]){
 
 	for(int i=0;i<64;i++)
 		playerInventory[i]=false;
+	playerInventory[0]=true;
 
 	mainMenu();
 	return 0;
@@ -153,30 +155,34 @@ string getCommand(string input){
 		}
 
 		else if(!stricmp(command1, "look")||!stricmp(command1, "l"))
-			checkPos();
-			//drawArray();
+			checkPos();//drawArray();
 		else if(!stricmp(command1, "clear"))
 			system("cls");
 		else if(!stricmp(command1, "help")||!stricmp(command1, "controls"))
 			controls();
 		else if(!stricmp(command1, "inventory")||!stricmp(command1, "i"))
 			inventory();
+		//TODO fix the open command.
 		else if(!stricmp(command1, "open")||!stricmp(command1, "o")){
-			if(!stricmp(command1, "door")){}
+			/*if(!stricmp(command1, "door")){}
 			else if(!stricmp(command1, "window")){}
 			else if(!stricmp(command1, "box")){}
 			else if(!stricmp(command1, "drawer")){}
 			else
-				cout<<"what would you like to open?";
+				cout<<"what would you like to open?";*/
 		}
-		else if(!stricmp(command1,"describe")||!stricmp(command1,"view")){
-			cout<<"1" <<command2<<endl;
+		else if(!stricmp(command1,"describe")||!stricmp(command1,"view"))
 			describeItem(command2);
+		else if(!strcmp(command1,"drop"))
+			dropItem(command2);
+		else if(!strcmp(command1,"grab")||!strcmp(command1,"pick")){
+			int temp = checkPos();
+			if(temp!=0){
+				playerInventory[temp]=true;
+			}
 		}
-		else if(!stricmp(command1, "give")){}
-			//TODO give itenms
-		else if(!stricmp(command1, "punch")){}
-			//TODO punch someone
+		else if(!strcmp(command1,"map")||!strcmp(command1,"m"))
+			drawMap();
 			
 		else
 			cout<<"Sorry i didn't understand what you entered.\n";
@@ -253,7 +259,7 @@ void mainMenu(){
 
 	char * command;
 	command = gets(userInput);
-	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")){
+	if(!stricmp(command, "new")||!stricmp(command, "new game")||!stricmp(command, "n")||!stricmp(command, "start")||!stricmp(command, "start new game")||!stricmp(command, "ne")||!stricmp(command, "nw")){
 		initialise();
 		system("cls");
 		//start of game, link to opening description.
@@ -285,7 +291,7 @@ void mainMenu(){
 
 void inventory(){
 	cout<<"In your inventory you have:\n";
-	playerInventory[0]=true;
+	//playerInventory[0]=true;
 
 	char comparingID[16]="itemID_XX";
 	ifstream itemFile("Assets/items.emp");
@@ -296,10 +302,21 @@ void inventory(){
 		
 		for(int i=0;i<30;i++)
 			if(playerInventory[i]==true){
-				comparingID[7]='0';		//comparingID[7]=i+48;
-				comparingID[8]=i+48;	//comparingID[8]=i+49;
+				if(i<10){
+					comparingID[7]='0';		//comparingID[7]=i+48;
+					comparingID[8]=i+48;	
+				}
+				else if(i>=10&&i<20){
+					comparingID[7]='1';
+					comparingID[8]=i+38;	
+				}
+				else if(i>=20&&i<30){
+					comparingID[7]='2';
+					comparingID[8]=i+28;	
+				}
+				//comparingID[8]=i+48;	//comparingID[8]=i+49;
 				if(!strcmp(comparingID,ID)){
-					cout<<"An "<<itemName<<endl;
+					cout<<"A "<<itemName<<endl;
 					//cout<<"Description: "<<description<<endl;
 				}
 			}
@@ -307,17 +324,37 @@ void inventory(){
 }
 
 void describeItem(char item[16]){
-	cout<<"2" <<item<<endl;
-	
+	ifstream itemFile("Assets/items.emp");
+	while(!itemFile.eof()){
+		char ID[16],itemName[16],description[256];
+		itemFile>>ID>>itemName>>description;
+
+		for(int i=0;i<strlen(description);i++)
+			if(description[i]=='_')
+				description[i]=' ';
+		
+		if(!strcmp(item,itemName))
+			cout<<"Description: "<<description<<endl;
+	}
+}
+
+void dropItem(char item[16]){
+	for(int i=0;i<strlen(item);i++)
+		if(item[i]=='_')
+			item[i]=' ';
+
 	ifstream itemFile("Assets/items.emp");
 	while(!itemFile.eof()){
 		char ID[16],itemName[16],description[256];
 		itemFile>>ID>>itemName>>description;
 		
-		for(int i=0;i<30;i++)
-			if(!strcmp(item,itemName)){
-				cout<<"Description: "<<description<<endl;
-			}
+		int numID;
+		numID=atoi(ID);
+
+		if(!strcmp(item,itemName)){
+			cout<<"droping item.\n";
+			playerInventory[numID]=false;
+		}
 	}
 }
 

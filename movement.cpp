@@ -7,18 +7,15 @@ using namespace std;
 #include "movement.h"
 
 int playerPos[16][16];
+int itemPos[16][16];
 int level=1;
+bool firstRun=true;
 
 void initialise(){
-	/*for(int i=0;i<5;i++)
-		for(int j=0;j<5;j++)
-			playerPos[i][j]=0;
-	playerPos[1][0]=1;//initialises the player's starting position.
-	cout<<"initialised\n";*/
-
+	//Initialising the players position using the map files.
 	char load[32]="Assets/Levels/levelX.emp";
 	load[19]=level+48;
-
+	
 	ifstream map1(load);
 	while(!map1.eof()){
 		for(int i=0;i<16;i++){	
@@ -34,6 +31,42 @@ void initialise(){
 					playerPos[i][j]=1;
 				else if(temp=='C')
 					playerPos[i][j]=5;
+			}
+		}
+	}
+	
+	if(firstRun){
+		playerPos[7][7]=0;
+		playerPos[6][1]=1;
+	}
+	firstRun=false;
+	
+	//Loading the item map for the positions of the items at the begining of the game.
+	char loadItemMap[32]="Assets/Levels/itemMapX.emp";
+	loadItemMap[21]=level+48;
+
+	for(int i=0;i<16;i++){	
+		for(int j=0;j<16;j++){
+			itemPos[i][j]=0;
+		}
+	}
+	
+	ifstream itemMap(loadItemMap);
+	if(!itemMap){
+		cout<<"error opening the file\n";
+	}
+	while(!itemMap.eof()){
+		for(int i=0;i<16;i++){	
+			for(int j=0;j<16;j++){
+				char temp;
+				itemMap>>temp;
+				//TODO add all items by their ID tag
+				if(temp=='X')
+					itemPos[i][j]=0;
+				else if(temp=='G')
+					itemPos[i][j]=02;
+				else if(temp=='C')
+					itemPos[i][j]=11;
 			}
 		}
 	}
@@ -62,11 +95,10 @@ void south(){
 					playerPos[i][j]=0;
 					i=i+1;
 					playerPos[i][j]=1;
-					//cout<<"Player is at "<<i<<" "<<j<<endl;
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i+1][j]==9)
-					cout<<"You cant go that way!\n";//TODO fix this error message.
+					cout<<"You cant go that way!\n";
 	checkPos();
 }
 
@@ -77,11 +109,10 @@ void east(){
 						playerPos[i][j]=0;
 						j=j+1;
 						playerPos[i][j]=1;
-						//cout<<"Player is at "<<i<<" "<<j<<endl;
 						break;
 					}
 					else if(playerPos[i][j]==1 && playerPos[i][j+1]==9)
-						cout<<"You cant go that way!\n";//TODO Fix this error message.
+						cout<<"You cant go that way!\n";
 	checkPos();
 }
 
@@ -92,7 +123,6 @@ void west(){
 					playerPos[i][j]=0;
 					j=j-1;
 					playerPos[i][j]=1;
-					//cout<<"Player is at "<<i<<" "<<j<<endl;
 					break;
 				}
 				else if(playerPos[i][j]==1 && playerPos[i][j-1]==9)
@@ -100,7 +130,7 @@ void west(){
 	checkPos();
 }
 
-void checkPos(){
+int checkPos(){
 	
 	if(playerPos[3][0]==1)
 		giveBox();
@@ -125,13 +155,16 @@ void checkPos(){
 				if(playerPos[i][j]==1){
 					comparingID[7]=j+48;
 					comparingID[9]=i+48;
-					//cout<<comparingID<<endl;
 					if(!strcmp(comparingID,ID)){
 						cout<<"you are in "<<roomName<<endl;
 						cout<<"Description: "<<description<<endl;
 					}
+					if(itemPos[i][j]!=0){
+						return itemPos[i][j];
+					}
 				}
 	}
+	return 0;
 }
 
 //Not being used.
@@ -145,14 +178,24 @@ void changeLevel(char c){
 	if(playerPos[7][7]==1 && level <5 && c=='+'){
 		level++;
 		initialise();
-		cout<<"level changed.\n";
+		cout<<"level changed to level "<<level<<". \n";
 	}
-	else if(playerPos[7][7]==1 && level>1 && level <5 && c=='-'){
+	else if(playerPos[7][7]==1 && level>1 && c=='-'){
 		level--;
 		initialise();
-		cout<<"level changed.\n";
+		cout<<"level changed to level "<<level<<". \n";
 	}
 	
 	else
 		cout<<"you cannot use the stairs right now.\n";
+}
+
+void drawMap(){
+	char load[32]="Assets/Levels/levelX.emp";
+	load[19]=level+48;
+	string temp;
+	ifstream controls(load);
+	while(getline(controls, temp)){
+		cout<<temp<<endl;
+	}
 }

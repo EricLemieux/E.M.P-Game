@@ -8,9 +8,9 @@ void north();
 void south();
 void east();
 void west();
-void checkPos();
+int checkPos();
 void changeLevel(char c);
-bool stairsUsable();
+void drawMap();
 
 void drawArray();
 
