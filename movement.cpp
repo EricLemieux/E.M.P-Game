@@ -30,7 +30,7 @@ void initialise(){
 					playerPos[i][j]=0;
 				else if(temp=='P')
 					playerPos[i][j]=1;
-				else if(temp=='C')
+				else if(temp=='D')
 					playerPos[i][j]=5;
 			}
 		}
@@ -147,7 +147,7 @@ void initialise(){
 void north(){
 	for(int i=0;i<16;i++)
 				for(int j=0;j<16;j++)
-					if(playerPos[i][j]==1 && playerPos[i-1][j]!=9){
+					if(playerPos[i][j]==1 && playerPos[i-1][j]==0){
 						playerPos[i][j]=0;
 						i=i-1;
 						playerPos[i][j]=1;
@@ -156,53 +156,53 @@ void north(){
 						//lvl1GameLoop();
 						break;
 					}
-					else if(playerPos[i][j]==1 && playerPos[i-1][j]==9)
+					else if(playerPos[i][j]==1 && playerPos[i-1][j]!=0)
 						cout<<"You cant go that way!\n";
 }
 
 void south(){
 	for(int i=0;i<16;i++)
 			for(int j=0;j<16;j++)
-				if(playerPos[i][j]==1 && playerPos[i+1][j]!=9){
+				if(playerPos[i][j]==1 && playerPos[i+1][j]==0){
 					playerPos[i][j]=0;
 					i=i+1;
 					playerPos[i][j]=1;
 					checkPos();
 					break;
 				}
-				else if(playerPos[i][j]==1 && playerPos[i+1][j]==9)
+				else if(playerPos[i][j]==1 && playerPos[i+1][j]!=0)
 					cout<<"You cant go that way!\n";
 }
 
 void east(){
 	for(int i=0;i<16;i++)
 				for(int j=0;j<16;j++)
-					if(playerPos[i][j]==1 && playerPos[i][j+1]!=9){
+					if(playerPos[i][j]==1 && playerPos[i][j+1]==0){
 						playerPos[i][j]=0;
 						j=j+1;
 						playerPos[i][j]=1;
 						checkPos();
 						break;
 					}
-					else if(playerPos[i][j]==1 && playerPos[i][j+1]==9)
+					else if(playerPos[i][j]==1 && playerPos[i][j+1]!=0)
 						cout<<"You cant go that way!\n";
 }
 
 void west(){
 	for(int i=0;i<16;i++)
 			for(int j=0;j<16;j++)
-				if(playerPos[i][j]==1 && playerPos[i][j-1]!=9){
+				if(playerPos[i][j]==1 && playerPos[i][j-1]==0){
 					playerPos[i][j]=0;
 					j=j-1;
 					playerPos[i][j]=1;
 					checkPos();
 					break;
 				}
-				else if(playerPos[i][j]==1 && playerPos[i][j-1]==9)
+				else if(playerPos[i][j]==1 && playerPos[i][j-1]!=0)
 					cout<<"You cant go that way!\n";
 }
 
-int checkPos(){
+void checkPos(){
 	char comparingID[16]="roomX_X_X";
 	char fileName[40]="Assets/Levels/LevelX/levelXrooms.emp";
 	fileName[19]=level+48;
@@ -219,11 +219,12 @@ int checkPos(){
 					comparingID[8]=j+48;
 				}
 
-	cout<<comparingID<<endl;
+	//cout<<comparingID<<endl;
 	while(!roomFile.eof()){
 		char ID[16],roomName[32],description[512];
 		roomFile>>ID>>roomName>>description;
 
+		NoSpaces(roomName);
 		NoSpaces(description);
 
 		if(!strcmp(comparingID,ID)){
@@ -231,6 +232,10 @@ int checkPos(){
 						cout<<"Description: "<<description<<endl;
 					}
 	}
+	checkItemPos();
+}
+
+int checkItemPos(){
 	//loops through the player position array and checks to see if an item and the player are in the same location.
 	for(int i=0;i<16;i++)
 		for(int j=0;j<16;j++)
@@ -239,7 +244,7 @@ int checkPos(){
 					return itemPos[i][j];//Returns back what item the player is standing on.
 				}
 			}
-	return 0;
+	return 0; 
 }
 
 //Not being used.
@@ -280,4 +285,13 @@ bool getTalkPos(int a,int b,int c){
 		return true;
 	else 
 		return false;
+}
+
+bool doorCheck(int a,int b,int c){
+	if(level==a && playerPos[c][b]==1){
+		if (playerPos[7][2]==1)
+			playerPos[7][3]=0;
+		return true;
+	}
+	return false;
 }

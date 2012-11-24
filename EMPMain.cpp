@@ -31,6 +31,7 @@ char userInput[64];
 char command1[NUM], command2[NUM], command3[NUM];
 bool playerInventory[64];
 
+//Breaks down the player's input into smaller commands that can be proccesed.
 void splitString(char c[]){
 	char firstWord[NUM] = " ";
 	char secondWord[NUM] = " ";
@@ -92,6 +93,7 @@ void splitString(char c[]){
 	cout<<command1<<endl;*/
 }
 
+//The main initialiser for the begining of the game. 
 int main(int argc, void *argv[]){
 	system("color 0a");
 
@@ -103,6 +105,7 @@ int main(int argc, void *argv[]){
 	return 0;
 }
 
+//The game loop that keeps the game running until the player quits.
 void gameLoop(){
 	string userCommand;
 
@@ -112,6 +115,7 @@ void gameLoop(){
 	}
 }
 
+//Takes in the player's commands and decides what to do with them.
 string getCommand(string input){
 	char * command;
 	bool waiting = true;
@@ -166,8 +170,14 @@ string getCommand(string input){
 			inventory();
 		//TODO fix the open command.
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
-			/*if(!_stricmp(command1, "door")){}
-			else if(!_stricmp(command1, "window")){}
+			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")){
+				if(playerInventory[13] && doorCheck(1,2,7)){
+					cout<<"Door opened.\n";
+					east();
+				}
+					
+			}
+			/*else if(!_stricmp(command1, "window")){}
 			else if(!_stricmp(command1, "box")){}
 			else if(!_stricmp(command1, "drawer")){}
 			else
@@ -177,9 +187,8 @@ string getCommand(string input){
 			describeItem(command2);
 		else if(!strcmp(command1,"drop"))
 			dropItem(command2);
-		else if(!strcmp(command1,"grab")||!strcmp(command1,"pick")){
-			int temp = checkPos();
-			cout<<"temp : "<<temp<<endl;
+		else if(!strcmp(command1,"grab")||!strcmp(command1,"pick")||!strcmp(command1,"take")){
+			int temp = checkItemPos();
 			if(temp!=0){
 				playerInventory[temp]=true;
 			}
@@ -217,6 +226,7 @@ string processCommand(string userCommand){
 	return ("");
 }
 
+//Outputs the Fifth Gameway logo when the player first starts the game.
 void logo(){
 	string temp;
 	ifstream logo("Assets/logo.emp");
@@ -225,6 +235,7 @@ void logo(){
 	}                           
 }
 
+//TODO Remove
 //Not used.
 void openFile(){
 	string identifier;
@@ -259,6 +270,7 @@ void openFile(){
 	system("pause");
 }
 
+//Outputs the main menu for the player at the beginging of the game.
 void mainMenu(){
 	string inputString;
 	//char * s;
@@ -305,9 +317,9 @@ void mainMenu(){
 	}
 }
 
+//Outputs the players inventory 
 void inventory(){
-	cout<<"In your inventory you have:\n";
-	//playerInventory[0]=true;
+	cout<<"In your inventory you have:\n\n";
 
 	char comparingID[40]="itemID_XX";
 	ifstream itemFile("Assets/items.emp");
@@ -335,14 +347,18 @@ void inventory(){
 					comparingID[8]=i+18;	
 				}
 				//comparingID[8]=i+48;	//comparingID[8]=i+49;
+				NoSpaces(itemName);
+
 				if(!strcmp(comparingID,ID)){
 					cout<<"A "<<itemName<<endl;
 					//cout<<"Description: "<<description<<endl;
 				}
 			}
 	}
+	cout<<endl;
 }
 
+//Outputs the description for the item, found in the items file.
 void describeItem(char item[16]){
 	ifstream itemFile("Assets/items.emp");
 	while(!itemFile.eof()){
@@ -358,6 +374,7 @@ void describeItem(char item[16]){
 	}
 }
 
+//Drops the item from the players inventory.
 void dropItem(char item[16]){
 	for(int i=0;i<strlen(item);i++)
 		if(item[i]=='_')
@@ -378,10 +395,13 @@ void dropItem(char item[16]){
 	}
 }
 
+//TODO Remove
+//Not being used except for testing the inventory system.
 void giveBox(){
 	playerInventory[1]=true;
 }
 
+//Prints the controls for the game to the player.
 void controls(){
 	string temp;
 	ifstream controls("Assets/controls.emp");
@@ -390,6 +410,8 @@ void controls(){
 	}
 }
 
+//TODO Remove
+//Not being used, except for testing purposes.
 void printRooms(){
 	string temp;
 	ifstream controls("roommmzzzz.txt");
@@ -399,12 +421,14 @@ void printRooms(){
 	}
 }
 
+//Removes the '_' from char arrays and replaces them with spaces making it easier for the player to read.
 void NoSpaces(char thing[]){
 	for(int i=0;i<strlen(thing);i++){
 		if(thing[i]=='_')
 			thing[i]=' ';
 	}
 }
+
 //Imports conversation assets from text file into game, based on given position and length of conversation
 void Talk(int talkst, int talkend){
 
@@ -419,7 +443,6 @@ void Talk(int talkst, int talkend){
 			talkid[4] = div+48;
 			talkid[5] = (i%10)+48;
 		}
-		cout<<talkid<<endl; //DELETE THIS, bug testing <-------------------------------------------------
 		ifstream Dialog("talk.txt");
 		if(!Dialog){
 			cout<<"error opening the talk.txt file\n";

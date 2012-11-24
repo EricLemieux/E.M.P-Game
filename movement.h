@@ -8,11 +8,13 @@ void north();
 void south();
 void east();
 void west();
-int checkPos();
+void checkPos();
+int checkItemPos();
 void changeLevel(char c);
 void drawMap();
 bool getTalkPos(int a,int b, int c);
 void NoSpaces(char thing[]);
+bool doorCheck(int a,int b,int c);
 
 void drawArray();
 
