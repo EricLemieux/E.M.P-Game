@@ -13,3 +13,13 @@ void preface(){
 		cout<<temp<<endl;
 	}
 }
+
+void ending(){
+	string temp;
+	ifstream ending("Assets/Story/ending.emp");
+	while(getline(ending, temp)){
+		cout<<temp<<endl;
+	}
+	cin.get();
+	quitGame();
+}

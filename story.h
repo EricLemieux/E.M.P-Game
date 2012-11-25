@@ -4,5 +4,8 @@
 #define STORY_H
 
 void preface();
+void ending();
+
+string quitGame();
 
 #endif 

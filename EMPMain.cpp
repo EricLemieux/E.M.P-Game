@@ -27,11 +27,13 @@ void dropItem(char item[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
 void talkCommand(char name[]);
+string nameItem(int num);
 
 bool quit=false;
 char userInput[64];
 char command1[NUM], command2[NUM], command3[NUM];
 bool playerInventory[64];
+int progress=0;
 
 //Breaks down the player's input into smaller commands that can be proccesed.
 void splitString(char c[]){
@@ -121,17 +123,15 @@ void gameLoop(){
 string getCommand(string input){
 	char * command;
 	bool waiting = true;
-
+	cout<<endl;
 	while(waiting){
 		cout<<input;
 		command = gets_s(userInput);
 		splitString(command);
 
 
-		if(!_stricmp(command1, "exit")||!_stricmp(command1, "quit")){
-			quit=true;
-			return "";
-		}
+		if(!_stricmp(command1, "exit")||!_stricmp(command1, "quit"))
+			quitGame();
 		if(!_stricmp(command1, "north")||!_stricmp(command1, "n"))
 			north();
 		else if(!_stricmp(command1, "south")||!_stricmp(command1, "s"))
@@ -177,11 +177,7 @@ string getCommand(string input){
 					cout<<"Door opened.\n";
 					east();
 				}
-					
 			}
-			/*else if(!_stricmp(command1, "window")){}
-			else if(!_stricmp(command1, "box")){}
-			else if(!_stricmp(command1, "drawer")){}*/
 			else
 				cout<<"what would you like to open?\n";
 		}
@@ -193,19 +189,35 @@ string getCommand(string input){
 			int temp = checkItemPos();
 			if(temp!=0){
 				playerInventory[temp]=true;
+				cout<<endl<<"You picked up a "<<nameItem(temp);
 			}
 		}
 		else if(!_stricmp(command1,"talk")||!stricmp(command1,"t")){
-			talkCommand(command2);
+			if(!_stricmp(command2,"to")||!stricmp(command2,"with"))
+				talkCommand(command3);
+			else
+				talkCommand(command2);
 		}
 		else if(!strcmp(command1,"map")||!strcmp(command1,"m"))
 			drawMap();
-		else if(!strcmp(command1,"pr"))
-			printRooms();
+		else if(!strcmp(command1,"use")||!strcmp(command1,"u"))
+			if(!strcmp(command2,"radio")||!strcmp(command2,"walkie")||!strcmp(command2,"walkie-talkie"))
+				if(getLevel()==1 && playerInventory[11]==true && progress==1){
+					//TODO make this actually call something.
+					progress++;
+					cout<<"you tell the guard to stop.\n";
+				}
+		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){}
+			//TODO check position and stuff
+		else if(!strcmp(command1,"arm")||!strcmp(command1,"activate")){}
+			/*if() //TODO position check
+				cout<<"Are you crazy? I am not doing that!\n"
+			*/
 		else
 			cout<<"Sorry i didn't understand what you entered.\n";
+		waiting=false;
 	}
-	cout<<endl;
+	cout<<endl<<endl;
 	for(int i=0;i<NUM;i++){
 		command1[i]='\0';
 		command2[i]='\0';
@@ -285,6 +297,7 @@ void mainMenu(){
 		initialise();
 		system("cls");
 		preface();
+		progress=1;
 		gameLoop();
 	}
 	else if(!_stricmp(command, "credits")||!_stricmp(command, "credit")||!_stricmp(command, "c")){
@@ -303,7 +316,7 @@ void mainMenu(){
 		goto mainMenu; //returns the player to the main menu screen.
 	}
 	else if(!_stricmp(command, "exit")||!_stricmp(command, "quit")||!_stricmp(command, "e")||!_stricmp(command, "q")){
-		exit(1);
+		quitGame();
 	}
 	else if(!_stricmp(command, "help")||!_stricmp(command, "controls")){
 		controls();
@@ -353,6 +366,39 @@ void inventory(){
 			}
 	}
 	cout<<endl;
+}
+
+string nameItem(int num){
+	char itemID[40] = "itemID_XX";
+	ifstream itemFile("Assets/items.emp");
+	while(!itemFile.eof()){
+		char ID[40],itemName[32],description[256];
+		itemFile>>ID>>itemName>>description;
+
+		if(num<10){
+			itemID[7]='0';
+			itemID[8]=num+48;	
+		}
+		else if(num>=10&&num<20){
+			itemID[7]='1';
+			itemID[8]=num+38;	
+		}
+		else if(num>=20&&num<30){
+			itemID[7]='2';
+			itemID[8]=num+28;	
+		}
+		else if(num>=30&&num<40){
+			itemID[7]='3';
+			itemID[8]=num+18;	
+		}
+
+		for(int i=0;i<strlen(itemName);i++)
+			if(itemName[i]=='_')
+				itemName[i]=' ';
+
+		if(!strcmp(itemID,ID))
+			return itemName;
+	}
 }
 
 //Outputs the description for the item, found in the items file.
@@ -457,6 +503,7 @@ void Talk(int talkst, int talkend){
 	}
 }
 
+//Processes who you talk to and if you are in the correct possition to do so.
 void talkCommand(char name[]){
 	//Charecters in level 1.
 	if(!_stricmp(name,"Anthony")||(!_stricmp(name,"Parker"))){
@@ -470,16 +517,20 @@ void talkCommand(char name[]){
 		}
 	}
 	if(!_stricmp(name,"Alan")||(!_stricmp(name,"Ford"))){
-		bool talkTrue = getTalkPos(1,0,0);//TODO fix the cordinates
-		if(talkTrue){}
+		bool talkTrue = getTalkPos(1,2,7);
+		if(talkTrue){
+			//TODO add dialog
+		}
 		else{
 			cout<<command2<<command3<<" isn't here... \n\n";
 		}
 	}
 	//Charecters on level 2.
 	if(!_stricmp(name,"Samantha")||!_stricmp(name,"Sam")||!_stricmp(name,"Weiler")){//TODO spelling??????
-		bool talkTrue = getTalkPos(2,0,0);//TODO fix the cordinates
-		if(talkTrue){}
+		bool talkTrue = getTalkPos(2,6,7);
+		if(talkTrue){
+			//TODO add dialog
+		}
 		else{
 			cout<<command2<<command3<<" isn't here... \n\n";
 		}
@@ -511,8 +562,10 @@ void talkCommand(char name[]){
 
 	//Charecters on level 4.
 	if(!_stricmp(name,"John")||!_stricmp(name,"Ingo")||!_stricmp(name,"J")){//TODO spelling??????
-		bool talkTrue = getTalkPos(4,0,0);//TODO fix the cordinates
-		if(talkTrue){}
+		bool talkTrue = getTalkPos(4,5,7);
+		if(talkTrue){
+			//TODO add dialog
+		}
 		else{
 			cout<<command2<<command3<<" isn't here... \n\n";
 		}
@@ -520,18 +573,28 @@ void talkCommand(char name[]){
 
 	//Charecters on level 5.
 	if(!_stricmp(name,"Dante")||!_stricmp(name,"Graff")||!_stricmp(name,"D")){//TODO spelling??????
-		bool talkTrue = getTalkPos(5,0,0);//TODO fix the cordinates
-		if(talkTrue){}
+		bool talkTrue = getTalkPos(5,4,7);
+		if(talkTrue){
+			//TODO add dialog.
+		}
 		else{
 			cout<<command2<<command3<<" isn't here... \n\n";
 		}
 	}
-	if(!_stricmp(name,"pollice")||!_stricmp(name,"officer")||!_stricmp(name,"cop")){//TODO spelling??????
-		bool talkTrue = getTalkPos(5,0,0);//TODO fix the cordinates
-		if(talkTrue){}
+	if(!_stricmp(name,"police")||!_stricmp(name,"officer")||!_stricmp(name,"cop")){//TODO spelling??????
+		bool talkTrue = getTalkPos(5,1,7);
+		if(talkTrue){
+			ending();
+		}
 		else{
 			cout<<command2<<command3<<" isn't here... \n\n";
 		}
 	}
 
+}
+
+//Quits the gameloop and therfore the game
+string quitGame(){
+	quit=true;
+	return "";
 }
