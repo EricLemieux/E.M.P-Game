@@ -17,8 +17,10 @@ void NoSpaces(char thing[]);
 bool doorCheck(int a,int b,int c,char d);
 int getLevel();
 void setFirstRun(bool set);
+bool bombCheck();
 
 string nameItem(int num);
+void NewLine(char a[]);
 
 //TODO remove both of these.
 void drawArray();

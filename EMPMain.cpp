@@ -31,6 +31,7 @@ void HackPassword(char answer[], int Level);
 bool HackMiniGame(int Level);
 void BootComp();
 void MenuComp(char name[], int personID);
+bool Keypad();
 
 bool quit=false;
 char userInput[64];
@@ -159,10 +160,10 @@ string getCommand(string input){
 			else if(!_stricmp(command2, "west")||!_stricmp(command2, "w"))
 				west();
 			else if(!_stricmp(command2, "down")||!_stricmp(command2, "d")){
-					changeLevel('-');
+					changeLevel('+');
 			}
 			else if(!_stricmp(command2, "up")||!_stricmp(command2, "u"))
-					changeLevel('+');
+					changeLevel('-');
 			else
 				cout<<"Where would you like to move?\n";
 		}
@@ -183,6 +184,15 @@ string getCommand(string input){
 					east();
 				}
 				else if(doorCheck(2,4,7,'w')){
+					bool keycode = Keypad();
+					if(keycode){
+						cout<<"Door opened.\n";
+						west();
+					}
+					else
+						cout<<"Nope.\n";
+				}
+				else if(playerInventory[13] && playerInventory[27] && playerInventory[28] && doorCheck(4,7,7,'w')){
 					cout<<"Door opened.\n";
 					west();
 				}
@@ -190,7 +200,7 @@ string getCommand(string input){
 			else
 				cout<<"what would you like to open?\n";
 		}
-		else if(!_stricmp(command1,"describe")||!_stricmp(command1,"view"))
+		else if(!_stricmp(command1,"describe")||!_stricmp(command1,"view")||!_stricmp(command1,"examine"))
 			describeItem(command2);
 		else if(!strcmp(command1,"drop"))
 			dropItem(command2);
@@ -201,7 +211,7 @@ string getCommand(string input){
 				cout<<endl<<"You picked up a "<<nameItem(temp);
 			}
 		}
-		else if(!_stricmp(command1,"talk")||!_stricmp(command1,"t")){
+		else if(!_stricmp(command1,"talk")||!_stricmp(command1,"t")||!_stricmp(command1,"speak")||!_stricmp(command1,"tell")){
 			if(!_stricmp(command2,"to")||!_stricmp(command2,"with"))
 				TalkWho(command3);
 			else
@@ -222,12 +232,17 @@ string getCommand(string input){
 		}
 		else if(!_stricmp(command1,"Computer")||!_stricmp(command1,"c"))
 				Computer();
-		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){}
-			//TODO check position and stuff
-		else if(!strcmp(command1,"arm")||!strcmp(command1,"activate")){}
-			/*if() //TODO position check
-				cout<<"Are you crazy? I am not doing that!\n"
-			*/
+		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){
+			if(bombCheck() && progress==2){//TODO change progress to whatever value it should be equal to.
+				cout<<"Bomb disarmed.\n";
+				progress=3;
+			}
+			else
+				cout<<"You cant do that here...\n";
+		}
+		else if(!strcmp(command1,"arm")||!strcmp(command1,"activate"))
+			if(bombCheck())
+				cout<<"Are you crazy? I am not doing that!\n";
 		else
 			cout<<"Sorry i didn't understand what you entered.\n";
 		waiting=false;
@@ -422,14 +437,20 @@ string nameItem(int num){
 
 //Outputs the description for the item, found in the items file.
 void describeItem(char item[16]){
+	if(!_stricmp(item,"red"))
+		strcpy(item,"red_keycard");
+	else if(!_stricmp(item,"blue"))
+		strcpy(item,"blue_keycard");
+	else if(!_stricmp(item,"yellow"))
+		strcpy(item,"yellow_keycard");
+
 	ifstream itemFile("Assets\\items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
 
-		for(int i=0;i<strlen(description);i++)
-			if(description[i]=='_')
-				description[i]=' ';
+		NoSpaces(description);
+		NewLine(description);
 		
 		if(!strcmp(item,itemName))
 			cout<<"Description: "<<description<<endl;
@@ -502,6 +523,13 @@ void NoSpaces(char thing[]){
 	}
 }
 
+//Creates line breaks by replacing '$' with '\n'
+void NewLine(char a[]){
+	for(int i=0; i<strlen(a); i++){
+		if(a[i] == '$')
+		a[i] = '\n';
+	}
+}
 
 //Imports conversation assets from text file into game, based on given position and length of conversation
 void Talk(int talkst, int talkend){
@@ -797,6 +825,7 @@ bool HackMiniGame(int Level){
 	cout<<"ERROR: INCORRECT PASSWORD\nLOGGING OUT\n";
 	return false;
 }
+
 void BootComp(){//Printed when player first accesses a computer
 	int i, a;
 
@@ -830,6 +859,7 @@ void BootComp(){//Printed when player first accesses a computer
 	}
 	cout<<"All rights reserved 2055. \n\n";
 }
+
 //Menu commands for computer, 3 events for 1normal PC, 2security comp terminal (advances plot progress to 2), 3 is bomb deactivation (advances plot progress to 4)
 void MenuComp(char name[], int personID){//change person to person ID
 	int k = 1;
@@ -900,6 +930,7 @@ bool Keypad(){
 	cin>>guess;
 	if(guess == code){
 		cout<<"\nACCESS GRANTED\n";
+		cin.ignore();
 		return 1;
 	}else{
 		cout<<"\nACCESS DENIED\n";

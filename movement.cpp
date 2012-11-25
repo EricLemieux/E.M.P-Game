@@ -226,6 +226,7 @@ void checkPos(){
 
 		NoSpaces(roomName);
 		NoSpaces(description);
+		NewLine(description);
 
 		if(!strcmp(comparingID,ID)){
 						cout<<"you are in "<<roomName<<endl;
@@ -256,15 +257,16 @@ void drawArray(){
 }
 
 void changeLevel(char c){
-	if(playerPos[7][7]==1 && level <5 && c=='+'){
+	if(playerPos[7][7]==1 && level <5 && c=='-'){
 		level++;
 		initialise();
-		cout<<"level changed to level "<<level<<". \n";
+		checkPos();
+		//cout<<"level changed to level "<<level<<". \n";
 	}
-	else if(playerPos[7][7]==1 && level>1 && c=='-'){
+	else if(playerPos[7][7]==1 && level>1 && c=='+'){
 		level--;
 		initialise();
-		cout<<"level changed to level "<<level<<". \n";
+		checkPos();
 	}
 	
 	else
@@ -272,9 +274,9 @@ void changeLevel(char c){
 }
 
 void drawMap(){
-	char load[32]="Assets\\Levels\\levelX.emp";
+	char load[32]="Assets\\Levels\\levelX\\levelX.emp";
 	load[19]=level+48;
-	cout<<load<<endl;
+	load[26]=level+48;
 	string temp;
 	ifstream map(load);
 	if(!map)
@@ -301,6 +303,13 @@ bool doorCheck(int a,int b,int c,char d){
 			playerPos[c-1][b]=0;
 		else if(d=='s')
 			playerPos[c+1][b]=0;
+		return true;
+	}
+	return false;
+}
+
+bool bombCheck(){
+	if(level==4 && playerPos[5][5]==1){
 		return true;
 	}
 	return false;
