@@ -26,6 +26,11 @@ void dropItem(char item[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
 void TalkWho(char command2[]);
+void Computer();
+void HackPassword(char answer[], int Level);
+bool HackMiniGame(int Level);
+void BootComp();
+void MenuComp(char name[], int personID);
 
 bool quit=false;
 char userInput[64];
@@ -204,7 +209,7 @@ string getCommand(string input){
 		}
 		else if(!strcmp(command1,"map")||!strcmp(command1,"m"))
 			drawMap();
-		else if(!strcmp(command1,"use")||!strcmp(command1,"u"))
+		else if(!strcmp(command1,"use")||!strcmp(command1,"u")){
 			if(!strcmp(command2,"radio")||!strcmp(command2,"walkie")||!strcmp(command2,"walkie-talkie"))
 				if(playerInventory[11]==true && progress==1){
 					//TODO make this actually call something.
@@ -214,6 +219,9 @@ string getCommand(string input){
 				else if(playerInventory[11]==true){
 					cout<<"you only hear static on the other side.\n";
 				}
+		}
+		else if(!_stricmp(command1,"Computer")||!_stricmp(command1,"c"))
+				Computer();
 		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){}
 			//TODO check position and stuff
 		else if(!strcmp(command1,"arm")||!strcmp(command1,"activate")){}
@@ -627,4 +635,274 @@ void TalkWho(char command2[]){
 string quitGame(){
 	quit=true;
 	return "";
+}
+
+//Computer Access function, determines who's computer it is being accessed
+void Computer(){
+	bool hacked = false, Compute;
+	int level = getLevel(), personID = 1, p;
+	char name[64] = " ";
+
+	for(p=1; p<=11; p++){
+		switch(p){
+		case 1:
+			Compute = getTalkPos(1,6,5);
+			if(Compute){
+				strcat_s(name,"JanitorStaff");
+			}break;
+		case 2:
+			Compute = getTalkPos(1,5,9);
+			if(Compute){
+				strcat_s(name,"JanitorStaff");
+			}break;
+		case 3:
+			Compute = getTalkPos(2,3,6);
+			if(Compute){
+				strcat_s(name,"AnthonyParker");
+			}break;
+		case 4:
+			Compute = getTalkPos(2,8,4);
+			if(Compute){
+				strcat_s(name,"SamanthaWeiler");
+			}break;
+		case 5:
+			Compute = getTalkPos(2,5,6);
+			if(Compute){
+				strcat_s(name,"ClaytonHaecker");
+			}break;
+		case 6:
+			Compute = getTalkPos(2,2,8);
+			if(Compute){
+				strcat_s(name,"MaxGoldstein");
+			}break;
+		case 7:
+			Compute = getTalkPos(3,5,6);
+			if(Compute){
+				strcat_s(name,"JessicaCreante");
+			}break;
+		case 8:
+			Compute = getTalkPos(3,5,8);
+			if(Compute){
+				strcat_s(name,"ThomasHobbs");
+			}break;
+		case 9:
+			Compute = getTalkPos(3,3,6);
+			if(Compute){
+				personID = 2;
+			}break;
+		case 10:
+			Compute = getTalkPos(4,5,4);
+			if(Compute){
+				personID = 3;
+			}break;
+		}
+		if(Compute){
+			hacked = HackMiniGame(level);
+			if(hacked){
+				MenuComp(name, personID);
+				return;
+			}
+		}
+		if(p == 11){
+			cout<<"\nThere's no computer here to use.\n\n";
+		}
+	}
+}
+
+//Print potential passwords to screen and sends random password to HackMiniGame function
+void HackPassword(char answer[], int Level){
+	char random[10] = {'!','@','$','%','?','(',')','&','*'};
+	char lettercode[21] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T'};
+	char lineCode[3], holder;
+	int swap1, swap2;
+
+
+	for(int i=0; i<=30; i++){ //Randomize lettercodes
+		swap1=rand()%21;
+		swap2=rand()%21;
+		holder = lettercode[swap1];
+		lettercode[swap1] = lettercode[swap2];
+		lettercode[swap2] = holder;
+	}
+
+	holder=10;
+	cout<<"Password needed...attempting system override... \n";
+	cout<<"...possible passwords solutions...";
+	for(int i=0; i<=250; i++){//Print hack code and randomize
+		swap1 = rand()%10;
+		if(swap1 != 9){//Print random character
+			cout<<random[swap1];
+		}else if(holder != -1){//Print first 10 randomized code words
+			lineCode[0] = Level + 48;
+			lineCode[1] = lettercode[holder];
+			lineCode[2] = '\0';
+			holder--;
+			ifstream Comphack("Assets/hack.emp");
+			if(!Comphack){
+				cout<<"error opening the items.data file\n";
+			}
+			while(!Comphack.eof()){
+			char word[10], text[3];
+			Comphack>>text>>word; 
+				if (!strcmp(lineCode,text)){
+					cout<<"[_"<<word<<"_]";
+				}
+			}
+		}
+	}
+
+	//choose random word from first 10 code words as answer
+	lineCode[1] = lettercode[rand()%10];
+	ifstream Comphack("Assets/hack.emp");
+	if(!Comphack){
+		cout<<"error opening the items.data file\n";
+	}
+	while(!Comphack.eof()){
+		char text[3];
+		Comphack>>text>>answer; 
+		if (!strcmp(lineCode,text)){
+				break;
+		}
+	}
+}
+
+//Needs input of difficulty corresponding to level 1-5, plays the guess game
+bool HackMiniGame(int Level){
+	char answer[10], guess[10];
+	int right, gright = 0;
+
+	HackPassword(answer, Level);
+
+	cout<<"\nENTER PASSWORD\n";
+	//3 guesses
+	for(int k=3; k>=0; k--){ //k is number of attempts
+		cin.getline(guess,10);
+		for(int i=0; i<=Level+2; i++){
+			guess[i] = toupper(guess[i]);
+		}
+		right = strcmp(answer,guess); //if guess is right, return true, allow next attempt if false
+		if(right == 0){
+			cout<<"PASSWORD ACCEPTED\n";
+			return true;
+		}
+		for(int i=0; guess[i]!='\0'; i++){
+			if(guess[i] == answer[i]){
+				gright++;
+			}
+		}
+		cout<<"Letters matched "<<gright<<endl;
+		cout<<k<<" attempts left before system lockout \n";
+		cout<<answer<<"     DEBUG ANSWER"<<endl; //remove this DEBUG <----------------------=====================================
+	}
+	cout<<"ERROR: INCORRECT PASSWORD\nLOGGING OUT\n";
+	return false;
+}
+void BootComp(){//Printed when player first accesses a computer
+	int i, a;
+
+	for(a=1; a<=5; a++){
+		if((a == 1)||(a == 5)){
+			for(i=1; i<=80; i++){
+				if((i==1)||(i==80))
+					cout<<"+";
+				else
+					cout<<"-";
+			}
+		}
+		if((a == 2)||(a == 4)){
+			for(i=1; i<=80; i++){
+				if((i == 1)||(i == 80))
+					cout<<"|";
+				else
+					cout<<" ";
+			}
+		}
+		if(a == 3){
+			for( i=1; i<=25; i++){
+				if((i == 1)||(i == 25))
+					cout<<"|";
+				else if(i == 16)
+					cout<<"CARDINAL DATA CENTER TERMINAL -- MASS NET LINK DISABLED ";
+				else
+					cout<<" ";
+			}
+		}
+	}
+	cout<<"All rights reserved 2055. \n\n";
+}
+//Menu commands for computer, 3 events for 1normal PC, 2security comp terminal (advances plot progress to 2), 3 is bomb deactivation (advances plot progress to 4)
+void MenuComp(char name[], int personID){//change person to person ID
+	int k = 1;
+	char COMPcommand = ' ';
+	bool quit = false;
+
+	BootComp();
+
+	if (personID == 1)
+		cout<<endl<<"Welcome user"<<name<<" \n\n";
+	do{
+		cout<<"MAIN MENU \n\n";
+		if (personID == 1)
+			cout<<" [E]mail \n"; //typical computers, for character emails
+		if (personID == 2)
+			cout<<" [S]ecurity Cameras \n [C]hronological Event Detail Report \n"; //security desk, activating cameras
+		if (personID == 3)
+			cout<<" Unrecognized External Access Detected: code"<<rand()%100000+10000<<" \n [A]ccess foreign entity \n"; //for hacking bomb
+		cout<<" [H]elp \n [Q]uit";
+		if(k == 1)
+			for(k=1; k<=6; k++){
+				cout<<"\n";	
+			}
+
+		cout<<"\n\nEnter Command:";
+		cin>>COMPcommand;
+		if((COMPcommand == 'h')||(COMPcommand == 'H')){
+			cout<<"\nType the first letter of a menu command to access that command.  To access \n[E]mail type 'E'.  'Q' is to quit interface.  To access commands preceded by a \nnumber, type the number. To access [1]FirstE-mail, type 1. \n\n";
+		}else if((COMPcommand == 'E')||(COMPcommand == 'e')){
+			//if (personID == 1);		
+			//EmailComp(personID) function
+		}else if((COMPcommand == 'C')||(COMPcommand == 'c')){
+			if(personID == 2){
+				cout<<"0700: An employee enters the Cardinal Data Center (CDC). He is followed by another carrying a bag.\n0710: The employee greets the security guard and enters the elevator. The man following guns down the security guard and moves the body. The CDC’s security is compromised.\n0730: The gunman returns to the security post in a security guard uniform.\n0735: The CDC’s freight door is opened, a large vehicle enters. Three persons enter the CDC through the front.\n0730-0800: Eight employees enter the building.\n0805: The building’s security system is trigger. The building is locked down.\n0815: The press are contacted about an EMP within the CDC. A radical neo-Luddite organization issues a manifesto and declares every hour a demand will be made.\n0845: Police lock down the surrounding areas. An evacuation takes place.\n0900: First Demand: Remove police snipers, every rebel agent has a “dead-man trigger”. If one dies the EMP will be detonated.\n0930: Police become aware of multiple hostages inside the CDC.\n1000: Second demand was not made. Police attempt contact.\n";
+			system("pause");}
+		}else if((COMPcommand == 'S')||(COMPcommand == 's')){
+			if(personID == 2){
+				//if(progress <= 2)
+					//progress++;
+					//cout<<   Enter plot develpment for act2, declaring where bomb is
+				//else
+					cout<<"You see that the EMP bomb is located on floor 2, and that the doors leading from the stairwell to floor 1 are locked down.";
+			}
+		}else if((COMPcommand == 'A')||(COMPcommand == 'a')){
+			if(personID == 3){
+				//somebool = Hack(Level);
+			}
+		}else if((COMPcommand == 'Q')||(COMPcommand == 'q')){
+			quit = true;
+			cout<<"Logging Off...\n\n\n";
+			//CheckPos();
+		}else{
+			cout<<"\nVALID COMMAND NOT ENTERED\n\n";
+		}
+	}while(!quit);
+}
+
+bool Keypad(){
+	int code = 1337, guess;
+
+	string temp;
+	ifstream controls("Assets\\keypad.emp");
+	while(getline(controls, temp)){
+		cout<<temp<<endl;
+	}
+
+	cout<<"\nENTER CODE: ";
+	cin>>guess;
+	if(guess == code){
+		cout<<"\nACCESS GRANTED\n";
+		return 1;
+	}else{
+		cout<<"\nACCESS DENIED\n";
+		return 0;
+	}
 }
