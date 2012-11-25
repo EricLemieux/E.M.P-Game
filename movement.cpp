@@ -2,6 +2,7 @@
 #include <fstream>
 #include <string>
 #include <cstring>
+
 using namespace std;
 
 #include "movement.h"
@@ -62,82 +63,81 @@ void initialise(){
 			for(int j=0;j<16;j++){
 				char temp;
 				itemMap>>temp;
-				//TODO add all items by their ID tag
 				if(temp=='X')
 					itemPos[i][j]=0;
-				else if(temp=='L')
+				else if(temp=='L')//Laser handcuffs
 					itemPos[i][j]=1;
-				else if(temp=='P')
+				else if(temp=='P')//portrait
 					itemPos[i][j]=2;
-				else if(temp=='D')
+				else if(temp=='D')//door
 					itemPos[i][j]=3;
-				else if(temp=='l')
+				else if(temp=='l')//lamp
 					itemPos[i][j]=4;
-				else if(temp=='T')
+				else if(temp=='T')//table
 					itemPos[i][j]=5;
-				else if(temp=='S')
+				else if(temp=='S')//security camera
 					itemPos[i][j]=6;
-				else if(temp=='A')
+				else if(temp=='A')//anthony parker
 					itemPos[i][j]=7;
-				else if(temp=='a')
+				else if(temp=='a')//alan ford
 					itemPos[i][j]=8;
-				else if(temp=='s')
+				else if(temp=='s')//samantha weiler
 					itemPos[i][j]=9;
-				else if(temp=='B')
+				else if(temp=='B')//box
 					itemPos[i][j]=10;
-				else if(temp=='W')
+				else if(temp=='W')//walkie talkie
 					itemPos[i][j]=11;
-				else if(temp=='$')
+				else if(temp=='$')//screwdriver
 					itemPos[i][j]=12;
-				else if(temp=='R')
+				else if(temp=='R')//red keycard
 					itemPos[i][j]=13;
-				else if(temp=='C')
+				else if(temp=='C')//couch
 					itemPos[i][j]=14;
-				else if(temp=='t')
+				else if(temp=='t')//tv
 					itemPos[i][j]=15;
-				else if(temp=='F')
+				else if(temp=='F')//fridge
 					itemPos[i][j]=16;
-				else if(temp=='I')
+				else if(temp=='I')//inside fridge
 					itemPos[i][j]=17;
-				else if(temp=='i')
+				else if(temp=='i')//inside bag
 					itemPos[i][j]=18;
-				else if(temp=='M')
+				else if(temp=='M')//microwave
 					itemPos[i][j]=19;
-				else if(temp=='w')
+				else if(temp=='w')//window
 					itemPos[i][j]=20;
-				else if(temp=='c')
+				else if(temp=='c')//computer terminal
 					itemPos[i][j]=21;
-				else if(temp=='d')
+				else if(temp=='d')//door
 					itemPos[i][j]=22;
-				else if(temp=='#')
+				else if(temp=='#')//desk
 					itemPos[i][j]=23;
-				else if(temp=='O')
+				else if(temp=='O')//office supplies
 					itemPos[i][j]=24;
-				else if(temp=='%')
+				else if(temp=='%')//desk
 					itemPos[i][j]=25;
-				else if(temp=='Z')
+				else if(temp=='Z')//drawer
 					itemPos[i][j]=26;
-				else if(temp=='b')
+				else if(temp=='b')//blue keycard
 					itemPos[i][j]=27;
-				else if(temp=='Y')
+				else if(temp=='Y')//yellow keycard
 					itemPos[i][j]=28;
-				else if(temp=='E')
+				else if(temp=='E')//desk
 					itemPos[i][j]=29;
-				else if(temp=='!')
+				else if(temp=='!')//Telephone
 					itemPos[i][j]=30;
-				else if(temp=='H')
+				else if(temp=='H')//HLC gun
 					itemPos[i][j]=31;
-				else if(temp=='G')
+				else if(temp=='G')//big guard
 					itemPos[i][j]=32;
-				else if(temp=='o')
+				else if(temp=='o')//omonous door
 					itemPos[i][j]=33;
-				else if(temp=='h')
+				else if(temp=='h')//HLC laser handcuffs
 					itemPos[i][j]=34;
-				else if(temp=='m')
+				else if(temp=='m')//mind control device
 					itemPos[i][j]=35;
-				else if(temp=='e')
+				else if(temp=='e')//EMP bomb
 					itemPos[i][j]=36;
-				else if(temp=='f')
+				else if(temp=='f')//BFG
 					itemPos[i][j]=37;
 			}
 		}
@@ -281,7 +281,7 @@ void drawMap(){
 }
 
 bool getTalkPos(int a,int b,int c){
-	if(a==1 && b==2 && c==6)
+	if(level==a && playerPos[c][b]==1)
 		return true;
 	else 
 		return false;
@@ -294,4 +294,8 @@ bool doorCheck(int a,int b,int c){
 		return true;
 	}
 	return false;
+}
+
+int getLevel(){
+	return level;
 }

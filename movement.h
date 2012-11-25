@@ -15,9 +15,10 @@ void drawMap();
 bool getTalkPos(int a,int b, int c);
 void NoSpaces(char thing[]);
 bool doorCheck(int a,int b,int c);
+int getLevel();
 
+//TODO remove both of these.
 void drawArray();
-
 void giveBox();
 
 #endif 

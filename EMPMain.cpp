@@ -10,6 +10,7 @@
 using namespace std;
 
 #include "movement.h"
+#include "story.h"
 
 #define NUM 64
 
@@ -25,6 +26,7 @@ void describeItem(char item[16]);
 void dropItem(char item[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
+void talkCommand(char name[]);
 
 bool quit=false;
 char userInput[64];
@@ -170,7 +172,7 @@ string getCommand(string input){
 			inventory();
 		//TODO fix the open command.
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
-			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")){
+			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")||!_stricmp(command3, "door")){
 				if(playerInventory[13] && doorCheck(1,2,7)){
 					cout<<"Door opened.\n";
 					east();
@@ -179,9 +181,9 @@ string getCommand(string input){
 			}
 			/*else if(!_stricmp(command1, "window")){}
 			else if(!_stricmp(command1, "box")){}
-			else if(!_stricmp(command1, "drawer")){}
+			else if(!_stricmp(command1, "drawer")){}*/
 			else
-				cout<<"what would you like to open?";*/
+				cout<<"what would you like to open?\n";
 		}
 		else if(!_stricmp(command1,"describe")||!_stricmp(command1,"view"))
 			describeItem(command2);
@@ -194,16 +196,7 @@ string getCommand(string input){
 			}
 		}
 		else if(!_stricmp(command1,"talk")||!stricmp(command1,"t")){
-			if(!_stricmp(command2,"Anthony")||(!_stricmp(command2,"Parker"))){
-				bool talkTrue = getTalkPos(1,2,6);
-				if(talkTrue){
-					int convo1 = 1, convoend = 6;
-					Talk(convo1, convoend);
-				}
-				else{
-					cout<<command2<<command3<<" isn't here... \n\n";
-				}
-			}
+			talkCommand(command2);
 		}
 		else if(!strcmp(command1,"map")||!strcmp(command1,"m"))
 			drawMap();
@@ -212,7 +205,6 @@ string getCommand(string input){
 		else
 			cout<<"Sorry i didn't understand what you entered.\n";
 	}
-
 	cout<<endl;
 	for(int i=0;i<NUM;i++){
 		command1[i]='\0';
@@ -276,7 +268,9 @@ void mainMenu(){
 	//char * s;
 	
 	logo();
-	system("pause");
+	//system("pause");
+	//cin.ignore();
+	cin.get();
 	system("cls");
 	mainMenu:
 	string temp;
@@ -290,7 +284,7 @@ void mainMenu(){
 	if(!_stricmp(command, "new")||!_stricmp(command, "new game")||!_stricmp(command, "n")||!_stricmp(command, "start")||!_stricmp(command, "start new game")||!_stricmp(command, "ne")||!_stricmp(command, "nw")){
 		initialise();
 		system("cls");
-		//start of game, link to opening description.
+		preface();
 		gameLoop();
 	}
 	else if(!_stricmp(command, "credits")||!_stricmp(command, "credit")||!_stricmp(command, "c")){
@@ -302,7 +296,9 @@ void mainMenu(){
 			cout<<temp<<endl;
 		}
 
-		system("pause");
+		//system("pause");
+		//cin.ignore();
+		cin.get();
 		system("cls");
 		goto mainMenu; //returns the player to the main menu screen.
 	}
@@ -311,7 +307,8 @@ void mainMenu(){
 	}
 	else if(!_stricmp(command, "help")||!_stricmp(command, "controls")){
 		controls();
-		system("pause");
+		//system("pause");
+		cin.get();
 		system("cls");
 		goto mainMenu;
 	}
@@ -417,7 +414,8 @@ void printRooms(){
 	ifstream controls("roommmzzzz.txt");
 	while(getline(controls, temp)){
 		cout<<temp<<endl;
-		system("pause");
+		//system("pause");
+		cin.get();
 	}
 }
 
@@ -457,4 +455,83 @@ void Talk(int talkst, int talkend){
 			}
 		}
 	}
+}
+
+void talkCommand(char name[]){
+	//Charecters in level 1.
+	if(!_stricmp(name,"Anthony")||(!_stricmp(name,"Parker"))){
+		bool talkTrue = getTalkPos(1,2,6);
+		if(talkTrue){
+			int convo1 = 1, convoend = 6;
+			Talk(convo1, convoend);
+		}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+	if(!_stricmp(name,"Alan")||(!_stricmp(name,"Ford"))){
+		bool talkTrue = getTalkPos(1,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+	//Charecters on level 2.
+	if(!_stricmp(name,"Samantha")||!_stricmp(name,"Sam")||!_stricmp(name,"Weiler")){//TODO spelling??????
+		bool talkTrue = getTalkPos(2,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+	if(!_stricmp(name,"Jessica")||!_stricmp(name,"Creante")||!_stricmp(name,"J")){//TODO spelling??????
+		bool talkTrue = getTalkPos(2,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+
+	//Charecters on level 3.
+	if(!_stricmp(name,"guard")||!_stricmp(name,"sleeping")){//TODO spelling??????
+		bool talkTrue = getTalkPos(3,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+	//TODO give different name
+	if(!_stricmp(name,"CDC")||!_stricmp(name,"???")||!_stricmp(name,"????")){//TODO spelling??????
+		bool talkTrue = getTalkPos(3,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+
+	//Charecters on level 4.
+	if(!_stricmp(name,"John")||!_stricmp(name,"Ingo")||!_stricmp(name,"J")){//TODO spelling??????
+		bool talkTrue = getTalkPos(4,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+
+	//Charecters on level 5.
+	if(!_stricmp(name,"Dante")||!_stricmp(name,"Graff")||!_stricmp(name,"D")){//TODO spelling??????
+		bool talkTrue = getTalkPos(5,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+	if(!_stricmp(name,"pollice")||!_stricmp(name,"officer")||!_stricmp(name,"cop")){//TODO spelling??????
+		bool talkTrue = getTalkPos(5,0,0);//TODO fix the cordinates
+		if(talkTrue){}
+		else{
+			cout<<command2<<command3<<" isn't here... \n\n";
+		}
+	}
+
 }
