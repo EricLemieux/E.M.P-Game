@@ -14,7 +14,7 @@ bool firstRun=true;
 
 void initialise(){
 	//Initialising the players position using the map files.
-	char load[32]="Assets/Levels/levelX/levelX.emp";
+	char load[32]="Assets\\Levels\\levelX\\levelX.emp";
 	load[19]=level+48;
 	load[26]=level+48;
 	
@@ -44,7 +44,7 @@ void initialise(){
 	firstRun=false;
 	
 	//Loading the item map for the positions of the items at the begining of the game.
-	char loadItemMap[40]="Assets/Levels/levelX/itemMapX.emp";
+	char loadItemMap[40]="Assets\\Levels\\levelX\\itemMapX.emp";
 	loadItemMap[19]=level+48;
 	loadItemMap[28]=level+48;
 
@@ -204,7 +204,7 @@ void west(){
 
 void checkPos(){
 	char comparingID[16]="roomX_X_X";
-	char fileName[40]="Assets/Levels/LevelX/levelXrooms.emp";
+	char fileName[40]="Assets\\Levels\\LevelX\\levelXrooms.emp";
 	fileName[19]=level+48;
 	fileName[26]=level+48;
 	ifstream roomFile(fileName);
@@ -272,11 +272,14 @@ void changeLevel(char c){
 }
 
 void drawMap(){
-	char load[32]="Assets/Levels/levelX.emp";
+	char load[32]="Assets\\Levels\\levelX.emp";
 	load[19]=level+48;
+	cout<<load<<endl;
 	string temp;
-	ifstream controls(load);
-	while(getline(controls, temp)){
+	ifstream map(load);
+	if(!map)
+		cout<<"error opening map file\n";
+	while(getline(map, temp)){
 		cout<<temp<<endl;
 	}
 }
@@ -288,10 +291,16 @@ bool getTalkPos(int a,int b,int c){
 		return false;
 }
 
-bool doorCheck(int a,int b,int c){
+bool doorCheck(int a,int b,int c,char d){
 	if(level==a && playerPos[c][b]==1){
-		if (playerPos[7][2]==1)
-			playerPos[7][3]=0;
+		if(d=='e')
+			playerPos[c][b+1]=0;
+		else if(d=='w')
+			playerPos[c][b-1]=0;
+		else if(d=='n')
+			playerPos[c-1][b]=0;
+		else if(d=='s')
+			playerPos[c+1][b]=0;
 		return true;
 	}
 	return false;
@@ -299,4 +308,8 @@ bool doorCheck(int a,int b,int c){
 
 int getLevel(){
 	return level;
+}
+
+void setFirstRun(bool set){
+	firstRun=set;
 }

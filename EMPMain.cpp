@@ -19,15 +19,13 @@ string processCommand(string command);
 void gameLoop();
 void logo();
 void openFile();
-void mainMenu();
 void inventory();
 void controls();
 void describeItem(char item[16]);
 void dropItem(char item[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
-void talkCommand(char name[]);
-
+void TalkWho(char command2[]);
 
 bool quit=false;
 char userInput[64];
@@ -105,6 +103,7 @@ int main(int argc, void *argv[]){
 		playerInventory[i]=false;
 	playerInventory[0]=true;
 
+	logo();
 	mainMenu();
 	return 0;
 }
@@ -131,7 +130,8 @@ string getCommand(string input){
 
 
 		if(!_stricmp(command1, "exit")||!_stricmp(command1, "quit"))
-			quitGame();
+			mainMenu();
+			//quitGame();
 		if(!_stricmp(command1, "north")||!_stricmp(command1, "n"))
 			north();
 		else if(!_stricmp(command1, "south")||!_stricmp(command1, "s"))
@@ -168,14 +168,18 @@ string getCommand(string input){
 			system("cls");
 		else if(!_stricmp(command1, "help")||!_stricmp(command1, "controls"))
 			controls();
-		else if(!_stricmp(command1, "inventory")||!_stricmp(command1, "i"))
+		else if(!_stricmp(command1, "inventory")||!_stricmp(command1, "i")||!_stricmp(command1, "inv"))
 			inventory();
 		//TODO fix the open command.
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
 			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")||!_stricmp(command3, "door")){
-				if(playerInventory[13] && doorCheck(1,2,7)){
+				if(playerInventory[13] && doorCheck(1,2,7,'e')){
 					cout<<"Door opened.\n";
 					east();
+				}
+				else if(doorCheck(2,4,7,'w')){
+					cout<<"Door opened.\n";
+					west();
 				}
 			}
 			else
@@ -192,11 +196,11 @@ string getCommand(string input){
 				cout<<endl<<"You picked up a "<<nameItem(temp);
 			}
 		}
-		else if(!_stricmp(command1,"talk")||!stricmp(command1,"t")){
-			if(!_stricmp(command2,"to")||!stricmp(command2,"with"))
-				talkCommand(command3);
+		else if(!_stricmp(command1,"talk")||!_stricmp(command1,"t")){
+			if(!_stricmp(command2,"to")||!_stricmp(command2,"with"))
+				TalkWho(command3);
 			else
-				talkCommand(command2);
+				TalkWho(command2);
 		}
 		else if(!strcmp(command1,"map")||!strcmp(command1,"m"))
 			drawMap();
@@ -236,10 +240,11 @@ string processCommand(string userCommand){
 //Outputs the Fifth Gameway logo when the player first starts the game.
 void logo(){
 	string temp;
-	ifstream logo("Assets/logo.emp");
+	ifstream logo("Assets\\logo.emp");
 	while(getline(logo, temp)){
 		cout<<temp<<endl;
-	}                           
+	}       
+	cin.get();
 }
 
 //TODO Remove
@@ -280,16 +285,11 @@ void openFile(){
 //Outputs the main menu for the player at the beginging of the game.
 void mainMenu(){
 	string inputString;
-	//char * s;
-	
-	logo();
-	//system("pause");
-	//cin.ignore();
-	cin.get();
+	setFirstRun(true);
 	system("cls");
 	mainMenu:
 	string temp;
-	ifstream mainMenu("Assets/mainMenu.emp");
+	ifstream mainMenu("Assets\\mainMenu.emp");
 	while(getline(mainMenu, temp)){
 		cout<<temp<<endl;
 	}
@@ -307,7 +307,7 @@ void mainMenu(){
 		system("cls");
 
 		string temp;
-		ifstream credits("Assets/credits.emp");
+		ifstream credits("Assets\\credits.emp");
 		while(getline(credits, temp)){
 			cout<<temp<<endl;
 		}
@@ -335,13 +335,14 @@ void inventory(){
 	cout<<"In your inventory you have:\n\n";
 
 	char comparingID[40]="itemID_XX";
-	ifstream itemFile("Assets/items.emp");
-	
+	ifstream itemFile("Assets\\items.emp");
+	int failedRuns=0;
+
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
-		
-		for(int i=0;i<40;i++)
+
+		for(int i=0;i<40;i++){
 			if(playerInventory[i]==true){
 				if(i<10){
 					comparingID[7]='0';		//comparingID[7]=i+48;
@@ -367,13 +368,19 @@ void inventory(){
 					//cout<<"Description: "<<description<<endl;
 				}
 			}
+			else if (playerInventory[i]==false){
+				failedRuns++;
+				if(failedRuns==39 && i==39)
+					cout<<"You have nothing in your inventory :(\n";
+			}
+		}
 	}
 	cout<<endl;
 }
 
 string nameItem(int num){
 	char itemID[40] = "itemID_XX";
-	ifstream itemFile("Assets/items.emp");
+	ifstream itemFile("Assets\\items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
@@ -402,11 +409,12 @@ string nameItem(int num){
 		if(!strcmp(itemID,ID))
 			return itemName;
 	}
+	return 0;
 }
 
 //Outputs the description for the item, found in the items file.
 void describeItem(char item[16]){
-	ifstream itemFile("Assets/items.emp");
+	ifstream itemFile("Assets\\items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
@@ -428,7 +436,7 @@ void dropItem(char item[16]){
 		strcpy(item,"blue_keycard");
 	if(!strcmp(item,"yellow"))
 		strcpy(item,"yellow_keycard");
-	ifstream itemFile("Assets/items.emp");
+	ifstream itemFile("Assets\\items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
@@ -460,7 +468,7 @@ void giveBox(){
 //Prints the controls for the game to the player.
 void controls(){
 	string temp;
-	ifstream controls("Assets/controls.emp");
+	ifstream controls("Assets\\controls.emp");
 	while(getline(controls, temp)){
 		cout<<temp<<endl;
 	}
@@ -485,6 +493,7 @@ void NoSpaces(char thing[]){
 			thing[i]=' ';
 	}
 }
+
 
 //Imports conversation assets from text file into game, based on given position and length of conversation
 void Talk(int talkst, int talkend){
@@ -516,95 +525,103 @@ void Talk(int talkst, int talkend){
 	}
 }
 
-//Processes who you talk to and if you are in the correct possition to do so.
-void talkCommand(char name[]){
-	//Charecters in level 1.
-	if(!_stricmp(name,"Anthony")||(!_stricmp(name,"Parker"))){
-		bool talkTrue = getTalkPos(1,2,6);
-		if(talkTrue){
-			int convo1 = 1, convoend = 6;
-			Talk(convo1, convoend);
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-	if(!_stricmp(name,"Alan")||(!_stricmp(name,"Ford"))){
-		bool talkTrue = getTalkPos(1,2,7);
-		if(talkTrue){
-			//TODO add dialog
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-	//Charecters on level 2.
-	if(!_stricmp(name,"Samantha")||!_stricmp(name,"Sam")||!_stricmp(name,"Weiler")){//TODO spelling??????
-		bool talkTrue = getTalkPos(2,6,7);
-		if(talkTrue){
-			//TODO add dialog
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-	if(!_stricmp(name,"Jessica")||!_stricmp(name,"Creante")||!_stricmp(name,"J")){//TODO spelling??????
-		bool talkTrue = getTalkPos(2,0,0);//TODO fix the cordinates
-		if(talkTrue){}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-
-	//Charecters on level 3.
-	if(!_stricmp(name,"guard")||!_stricmp(name,"sleeping")){//TODO spelling??????
-		bool talkTrue = getTalkPos(3,0,0);//TODO fix the cordinates
-		if(talkTrue){}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-	//TODO give different name
-	if(!_stricmp(name,"CDC")||!_stricmp(name,"???")||!_stricmp(name,"????")){//TODO spelling??????
-		bool talkTrue = getTalkPos(3,0,0);//TODO fix the cordinates
-		if(talkTrue){}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-
-	//Charecters on level 4.
-	if(!_stricmp(name,"John")||!_stricmp(name,"Ingo")||!_stricmp(name,"J")){//TODO spelling??????
-		bool talkTrue = getTalkPos(4,5,7);
-		if(talkTrue){
-			//TODO add dialog
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-
-	//Charecters on level 5.
-	if(!_stricmp(name,"Dante")||!_stricmp(name,"Graff")||!_stricmp(name,"D")){//TODO spelling??????
-		bool talkTrue = getTalkPos(5,4,7);
-		if(talkTrue){
-			//TODO add dialog.
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-	if(!_stricmp(name,"police")||!_stricmp(name,"officer")||!_stricmp(name,"cop")){//TODO spelling??????
+//determines what character player is talking to
+void TalkWho(char command2[]){
+	if(!_stricmp(command2,"Anthony")||!_stricmp(command2,"Parker")){
+	bool talkTrue = getTalkPos(1,2,6);
+			if(talkTrue){
+				int convo1 = 7, convoend = 11;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Alan")||!_stricmp(command2,"Ford")){
+	bool talkTrue = getTalkPos(1,2,7);
+			if(talkTrue){
+				int convo1 = 12, convoend = 14;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Samantha")||(!_stricmp(command2,"Weiler"))){
+	bool talkTrue = getTalkPos(2,4,8);
+			if(talkTrue){
+				int convo1 = 15, convoend = 17;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Jessica")||(!_stricmp(command2,"Creante"))){
+	bool talkTrue = getTalkPos(2,6,8);
+			if(talkTrue){
+				int convo1 = 18, convoend = 20;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"CDC")||(!_stricmp(command2,"GUARD"))){
+	bool talkTrue = getTalkPos(3,2,7);
+			if(talkTrue){
+				int convo1 = 21, convoend = 23;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<"The "<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Max")||(!_stricmp(command2,"GOLDSTEIN"))){
+	bool talkTrue = getTalkPos(3,3,8);
+			if(talkTrue){
+				int convo1 = 24, convoend = 26;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"HLC")||(!_stricmp(command2,"GUARD"))){
+	bool talkTrue = getTalkPos(4,6,7);
+			if(talkTrue){
+				int convo1 = 27, convoend = 27;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Jon")||(!_stricmp(command2,"Ingo"))){
+	bool talkTrue = getTalkPos(4,4,6);
+			if(talkTrue){
+				int convo1 = 28, convoend = 29;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"Dante")||(!_stricmp(command2,"Gaffe"))){
+		bool talkTrue = getTalkPos(5,2||3||4,6||7||8);
+			if(talkTrue){
+				int convo1 = 30, convoend = 30;
+				Talk(convo1, convoend);
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else if(!_stricmp(command2,"police")||!_stricmp(command2,"officer")||!_stricmp(command2,"cop")){
 		bool talkTrue = getTalkPos(5,1,7);
-		if(talkTrue){
-			ending();
-		}
-		else{
-			cout<<command2<<command3<<" isn't here... \n\n";
-		}
-	}
-
+			if(talkTrue){
+				int convo1 = 32, convoend = 33;
+				Talk(convo1, convoend);
+				ending();
+			}
+			else{
+				cout<<command2<<command3<<" isn't here... \n\n";
+			}
+	}else
+		cout<<"Who are you trying to talk to?\n\n";
 }
+
 
 //Quits the gameloop and therfore the game
 string quitGame(){

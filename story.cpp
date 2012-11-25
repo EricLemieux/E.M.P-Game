@@ -21,5 +21,6 @@ void ending(){
 		cout<<temp<<endl;
 	}
 	cin.get();
-	quitGame();
+	//quitGame();
+	mainMenu();
 }

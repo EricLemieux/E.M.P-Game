@@ -7,5 +7,6 @@ void preface();
 void ending();
 
 string quitGame();
+void mainMenu();
 
 #endif 
