@@ -27,7 +27,7 @@ void dropItem(char item[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
 void talkCommand(char name[]);
-string nameItem(int num);
+
 
 bool quit=false;
 char userInput[64];
@@ -202,10 +202,13 @@ string getCommand(string input){
 			drawMap();
 		else if(!strcmp(command1,"use")||!strcmp(command1,"u"))
 			if(!strcmp(command2,"radio")||!strcmp(command2,"walkie")||!strcmp(command2,"walkie-talkie"))
-				if(getLevel()==1 && playerInventory[11]==true && progress==1){
+				if(playerInventory[11]==true && progress==1){
 					//TODO make this actually call something.
 					progress++;
 					cout<<"you tell the guard to stop.\n";
+				}
+				else if(playerInventory[11]==true){
+					cout<<"you only hear static on the other side.\n";
 				}
 		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){}
 			//TODO check position and stuff
@@ -419,17 +422,27 @@ void describeItem(char item[16]){
 
 //Drops the item from the players inventory.
 void dropItem(char item[16]){
-	for(int i=0;i<strlen(item);i++)
-		if(item[i]=='_')
-			item[i]=' ';
-
+	if(!strcmp(item,"red"))
+		strcpy(item,"red_keycard");
+	if(!strcmp(item,"blue"))
+		strcpy(item,"blue_keycard");
+	if(!strcmp(item,"yellow"))
+		strcpy(item,"yellow_keycard");
 	ifstream itemFile("Assets/items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
 		
 		int numID;
-		numID=atoi(ID);
+
+		if(ID[7]=='0')
+			numID=ID[8]-48;
+		else if(ID[7]=='1')
+			numID=ID[8]-38;
+		else if(ID[7]=='2')
+			numID=ID[8]-28;
+		else if(ID[7]=='3')
+			numID=ID[8]-18;
 
 		if(!strcmp(item,itemName)){
 			cout<<"droping item.\n";

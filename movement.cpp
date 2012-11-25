@@ -63,7 +63,7 @@ void initialise(){
 			for(int j=0;j<16;j++){
 				char temp;
 				itemMap>>temp;
-				if(temp=='X')
+				if(temp=='X'||temp=='0')
 					itemPos[i][j]=0;
 				else if(temp=='L')//Laser handcuffs
 					itemPos[i][j]=1;
@@ -241,6 +241,7 @@ int checkItemPos(){
 		for(int j=0;j<16;j++)
 			if(playerPos[i][j]==1){					
 				if(itemPos[i][j]!=0){
+					cout<<"You see a "<<nameItem(itemPos[i][j])<<"."<<endl;
 					return itemPos[i][j];//Returns back what item the player is standing on.
 				}
 			}

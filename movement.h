@@ -17,6 +17,8 @@ void NoSpaces(char thing[]);
 bool doorCheck(int a,int b,int c);
 int getLevel();
 
+string nameItem(int num);
+
 //TODO remove both of these.
 void drawArray();
 void giveBox();
