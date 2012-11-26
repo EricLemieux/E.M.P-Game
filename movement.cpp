@@ -369,3 +369,7 @@ bool bossClose(int a,int b){
 	else 
 		return false;
 }
+
+void setPos(int a,int b,int c){
+	playerPos[a][b]=c;
+}

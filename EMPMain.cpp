@@ -221,6 +221,15 @@ string getCommand(string input){
 					else
 						cout<<"Nope.\n";
 				}
+				else if(doorCheck(5,7,1,'w')){//TODO reconfirm cords
+					if(progress==5){
+						progress=6;
+						cout<<"Door opened.\n";
+						west();
+					}
+					else
+						cout<<"Dante is still standing behind you!\n";
+				}
 			}
 			else
 				cout<<"what would you like to open?\n";
@@ -268,6 +277,7 @@ string getCommand(string input){
 					Talk(36-bossHP, 36-bossHP);
 					if(bossHP==0){
 						progress=5;
+						setPos(7,4,0);
 						cout<<"Dante Has been defeated.\n";
 					}
 				}
@@ -390,12 +400,17 @@ void mainMenu(){
 	else if(!_stricmp(command, "exit")||!_stricmp(command, "quit")||!_stricmp(command, "e")||!_stricmp(command, "q")){
 		quitGame();
 	}
-	else if(!_stricmp(command, "help")||!_stricmp(command, "controls")){
+	else if(!_stricmp(command, "help")||!_stricmp(command, "controls")||!_stricmp(command, "c")){
 		controls();
 		//system("pause");
-		cin.get();
+		//cin.get();
+		cin.ignore();
 		system("cls");
 		goto mainMenu;
+	}
+	else{
+		cout<<"Sorry I dont understand what you entered.\n";
+		cin.ignore();
 	}
 }
 
@@ -967,7 +982,7 @@ void MenuComp(char name[], int personID){//change person to person ID
 
 //The keypad puzzle for the second floor head office.
 bool Keypad(){
-	int code = 1337, guess;
+	char code[5] = "1337", guess[32];
 
 	string temp;
 	ifstream controls("Assets\\keypad.emp");
@@ -976,10 +991,9 @@ bool Keypad(){
 	}
 
 	cout<<"\nENTER CODE: ";
-	cin>>guess;
-	if(guess == code){
+	cin.getline(guess,32);
+	if(!strcmp(guess, code)){
 		cout<<"\nACCESS GRANTED\n";
-		cin.ignore();
 		return 1;
 	}else{
 		cout<<"\nACCESS DENIED\n";

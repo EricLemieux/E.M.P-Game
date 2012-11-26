@@ -20,6 +20,7 @@ void setFirstRun(bool set);
 bool bombCheck();
 bool bossCheck();
 int getPos();
+void setPos(int a,int b,int c);
 //bool bossClose(int a,int b);
 
 string nameItem(int num);
