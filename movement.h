@@ -9,7 +9,7 @@ void south();
 void east();
 void west();
 void checkPos();
-int checkItemPos();
+int checkItemPos(char sym);
 void changeLevel(char c);
 void drawMap();
 bool getTalkPos(int a,int b, int c);

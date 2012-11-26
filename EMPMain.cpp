@@ -32,6 +32,7 @@ bool HackMiniGame(int Level);
 void BootComp();
 void MenuComp(char name[], int personID);
 bool Keypad();
+void EmailComp(char name[]);
 
 bool quit=false;
 char userInput[64];
@@ -179,11 +180,14 @@ string getCommand(string input){
 		//TODO fix the open command.
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
 			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")||!_stricmp(command3, "door")){
-				if(playerInventory[13] && doorCheck(1,2,7,'e')){
-					cout<<"Door opened.\n";
-					east();
-				}
-				else if(doorCheck(2,4,7,'w')){
+				if(doorCheck(1,2,7,'e'))
+					if(playerInventory[13]){
+						cout<<"Door opened.\n";
+						east();
+					}
+					else
+						cout<<"This door appears to be locked.\n";
+				else if(doorCheck(2,3,7,'w')){
 					bool keycode = Keypad();
 					if(keycode){
 						cout<<"Door opened.\n";
@@ -192,10 +196,13 @@ string getCommand(string input){
 					else
 						cout<<"Nope.\n";
 				}
-				else if(playerInventory[13] && playerInventory[27] && playerInventory[28] && doorCheck(4,7,7,'w')){
-					cout<<"Door opened.\n";
-					west();
-				}
+				else if(doorCheck(4,7,7,'w'))
+					if(playerInventory[13] && playerInventory[27] && playerInventory[28]){
+						cout<<"Door opened.\n";
+						west();
+					}
+					else
+						cout<<"This door appears to need three keys to unlock.\n";
 			}
 			else
 				cout<<"what would you like to open?\n";
@@ -205,7 +212,7 @@ string getCommand(string input){
 		else if(!strcmp(command1,"drop"))
 			dropItem(command2);
 		else if(!strcmp(command1,"grab")||!strcmp(command1,"pick")||!strcmp(command1,"take")){
-			int temp = checkItemPos();
+			int temp = checkItemPos('-');
 			if(temp!=0){
 				playerInventory[temp]=true;
 				cout<<endl<<"You picked up a "<<nameItem(temp);
@@ -618,7 +625,7 @@ void TalkWho(char command2[]){
 				cout<<command2<<command3<<" isn't here... \n\n";
 			}
 	}else if(!_stricmp(command2,"HLC")||(!_stricmp(command2,"GUARD"))){
-	bool talkTrue = getTalkPos(4,6,7);
+	bool talkTrue = getTalkPos(4,6,6);
 			if(talkTrue){
 				int convo1 = 27, convoend = 27;
 				Talk(convo1, convoend);
@@ -627,7 +634,7 @@ void TalkWho(char command2[]){
 				cout<<command2<<command3<<" isn't here... \n\n";
 			}
 	}else if(!_stricmp(command2,"Jon")||(!_stricmp(command2,"Ingo"))){
-	bool talkTrue = getTalkPos(4,4,6);
+	bool talkTrue = getTalkPos(4,6,6);
 			if(talkTrue){
 				int convo1 = 28, convoend = 29;
 				Talk(convo1, convoend);
@@ -676,12 +683,12 @@ void Computer(){
 		case 1:
 			Compute = getTalkPos(1,6,5);
 			if(Compute){
-				strcat_s(name,"JanitorStaff");
+				strcat_s(name,"FloorCleaning");
 			}break;
 		case 2:
 			Compute = getTalkPos(1,5,9);
 			if(Compute){
-				strcat_s(name,"JanitorStaff");
+				strcat_s(name,"FloorCleaning");
 			}break;
 		case 3:
 			Compute = getTalkPos(2,3,6);
@@ -889,8 +896,8 @@ void MenuComp(char name[], int personID){//change person to person ID
 		if((COMPcommand == 'h')||(COMPcommand == 'H')){
 			cout<<"\nType the first letter of a menu command to access that command.  To access \n[E]mail type 'E'.  'Q' is to quit interface.  To access commands preceded by a \nnumber, type the number. To access [1]FirstE-mail, type 1. \n\n";
 		}else if((COMPcommand == 'E')||(COMPcommand == 'e')){
-			//if (personID == 1);		
-			//EmailComp(personID) function
+			if (personID == 1);		
+			EmailComp(name);
 		}else if((COMPcommand == 'C')||(COMPcommand == 'c')){
 			if(personID == 2){
 				cout<<"0700: An employee enters the Cardinal Data Center (CDC). He is followed by another carrying a bag.\n0710: The employee greets the security guard and enters the elevator. The man following guns down the security guard and moves the body. The CDC’s security is compromised.\n0730: The gunman returns to the security post in a security guard uniform.\n0735: The CDC’s freight door is opened, a large vehicle enters. Three persons enter the CDC through the front.\n0730-0800: Eight employees enter the building.\n0805: The building’s security system is trigger. The building is locked down.\n0815: The press are contacted about an EMP within the CDC. A radical neo-Luddite organization issues a manifesto and declares every hour a demand will be made.\n0845: Police lock down the surrounding areas. An evacuation takes place.\n0900: First Demand: Remove police snipers, every rebel agent has a “dead-man trigger”. If one dies the EMP will be detonated.\n0930: Police become aware of multiple hostages inside the CDC.\n1000: Second demand was not made. Police attempt contact.\n";
@@ -936,4 +943,94 @@ bool Keypad(){
 		cout<<"\nACCESS DENIED\n";
 		return 0;
 	}
+}
+
+//imports e-mails appropriate to the computer the plyer is on, and allows the player to choose and print emails to read
+void EmailComp(char name[]){
+	char subject1[64] = ":", subject2[64] = ":", subject3[64] = ":";
+	bool back = false;
+
+	switch(name[1]){
+	case 'A':
+		strcat(subject1,"SPAM");
+		strcat(subject2,"Regarding_Goldstein");
+		strcat(subject3,"Try_GRUE_game");
+		break;
+	case 'M':
+		strcat(subject1,"US");
+		strcat(subject2,"XXX-HOTLIVEGIRLS-XXX(SPAM)");
+		strcat(subject3,"RE:SPAM");
+		break;
+	case 'S':
+		strcat(subject1,"Concerning_Cafeteria_Microwave");
+		strcat(subject2,"RE:Regarding_Goldstein");
+		strcat(subject3,"Can_I_has_Access?");
+		break;
+	case 'C':
+		strcat(subject1,"Concerning_Cafeteria_Microwave");
+		strcat(subject2,"All_Staff");
+		strcat(subject3,"I_Know");
+		break;
+	case 'J':
+		strcat(subject1,"Concerning_Cafeteria_Microwave");
+		strcat(subject2,"All_Staff");
+		strcat(subject3,"PLAN");
+		break;
+	case 'T':
+		strcat(subject1,"Concerning_Cafeteria_Microwave");
+		strcat(subject2,"All_Staff");
+		strcat(subject3,"Try_GRUE_game");
+		break;
+	case 'F':
+		strcat(subject1,"Concerning_Cafeteria_Microwave");
+		strcat(subject2,"All_Staff");
+		strcat(subject3,"Clean-up");
+		break;
+	}
+
+
+
+	do{
+		char input;
+		cout<<"\nEmail Menu\n\n [1]"<<subject1<<"\n [2]"<<subject2<<"\n [3]"<<subject3<<"\n [B]ACK\n\nENTER COMMAND:";
+		cin>>input;
+		if((input == 'b')||(input == 'B')){
+			back = true;
+			break;
+		}
+		ifstream Email("Assets\\email.emp");
+		if(!Email){
+			cout<<"error opening the items.data file\n";
+		}
+		while(!Email.eof()){
+			char subject[64], message[1024], header[128];
+			Email>>subject>>header>>message;
+			NewLine(header);
+			NoSpaces(header);
+			NoSpaces(message);
+			switch(input){
+			case '1':
+					if(!strcmp(subject,subject1)){
+						NoSpaces(subject);
+						cout<<"\nTo:"<<name<<header<<subject<<endl<<message<<endl<<endl;
+					}
+				break;
+			case '2':
+					if(!strcmp(subject,subject2)){
+						NoSpaces(subject);
+						cout<<"\nTo:"<<name<<header<<subject<<endl<<message<<endl<<endl;
+					}
+				break;
+			case '3':
+					if(!strcmp(subject,subject3)){
+						NoSpaces(subject);
+						cout<<"\nTo:"<<name<<header<<subject<<endl<<message<<endl<<endl;
+					}
+				break;
+			default:
+				cout<<"\nNOT A VALID INPUT\n\n";
+				break;
+			}
+		}
+	}while(back == false);
 }

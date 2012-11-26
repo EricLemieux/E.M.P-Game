@@ -156,8 +156,10 @@ void north(){
 						//lvl1GameLoop();
 						break;
 					}
-					else if(playerPos[i][j]==1 && playerPos[i-1][j]!=0)
-						cout<<"You cant go that way!\n";
+					else if(playerPos[i][j]==1 && playerPos[i-1][j]==9)
+						cout<<"There is a wall there.\n";
+					else if(playerPos[i][j]==1 && playerPos[i-1][j]==5)
+						cout<<"you have to open the door before you can walk through it.\n";
 }
 
 void south(){
@@ -170,8 +172,10 @@ void south(){
 					checkPos();
 					break;
 				}
-				else if(playerPos[i][j]==1 && playerPos[i+1][j]!=0)
-					cout<<"You cant go that way!\n";
+				else if(playerPos[i][j]==1 && playerPos[i+1][j]==9)
+					cout<<"There is a wall there!\n";
+				else if(playerPos[i][j]==1 && playerPos[i+1][j]==5)
+					cout<<"you have to open the door before you can walk through it.\n";
 }
 
 void east(){
@@ -184,8 +188,10 @@ void east(){
 						checkPos();
 						break;
 					}
-					else if(playerPos[i][j]==1 && playerPos[i][j+1]!=0)
-						cout<<"You cant go that way!\n";
+					else if(playerPos[i][j]==1 && playerPos[i][j+1]==9)
+						cout<<"There is a wall there!\n";
+					else if(playerPos[i][j]==1 && playerPos[i][j+1]==5)
+						cout<<"You have to open the door before you can walk through it.\n";
 }
 
 void west(){
@@ -198,8 +204,10 @@ void west(){
 					checkPos();
 					break;
 				}
-				else if(playerPos[i][j]==1 && playerPos[i][j-1]!=0)
-					cout<<"You cant go that way!\n";
+				else if(playerPos[i][j]==1 && playerPos[i][j-1]==9)
+					cout<<"There is a wall there!\n";
+				else if(playerPos[i][j]==1 && playerPos[i][j-1]==5)
+					cout<<"You have to open the door before you can walk through it.\n";
 }
 
 void checkPos(){
@@ -233,16 +241,17 @@ void checkPos(){
 						cout<<"Description: "<<description<<endl;
 					}
 	}
-	checkItemPos();
+	checkItemPos(' ');
 }
 
-int checkItemPos(){
+int checkItemPos(char sym){
 	//loops through the player position array and checks to see if an item and the player are in the same location.
 	for(int i=0;i<16;i++)
 		for(int j=0;j<16;j++)
 			if(playerPos[i][j]==1){					
 				if(itemPos[i][j]!=0){
-					cout<<"You see a "<<nameItem(itemPos[i][j])<<"."<<endl;
+					if(sym!='-')
+						cout<<"You see a "<<nameItem(itemPos[i][j])<<"."<<endl;
 					return itemPos[i][j];//Returns back what item the player is standing on.
 				}
 			}
