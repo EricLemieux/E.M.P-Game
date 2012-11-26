@@ -18,9 +18,13 @@ bool doorCheck(int a,int b,int c,char d);
 int getLevel();
 void setFirstRun(bool set);
 bool bombCheck();
+bool bossCheck();
+int getPos();
+//bool bossClose(int a,int b);
 
 string nameItem(int num);
 void NewLine(char a[]);
+int getProgress();
 
 //TODO remove both of these.
 void drawArray();

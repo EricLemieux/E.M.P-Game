@@ -6,11 +6,13 @@
 #include <cstring>
 #include <fstream>
 #include <iomanip>
+#include <windows.h>
 
 using namespace std;
 
 #include "movement.h"
 #include "story.h"
+#include "bossFight.h"
 
 #define NUM 64
 
@@ -39,6 +41,7 @@ char userInput[64];
 char command1[NUM], command2[NUM], command3[NUM];
 bool playerInventory[64];
 int progress=0;
+int bossHP=3;
 
 //Breaks down the player's input into smaller commands that can be proccesed.
 void splitString(char c[]){
@@ -177,7 +180,6 @@ string getCommand(string input){
 			controls();
 		else if(!_stricmp(command1, "inventory")||!_stricmp(command1, "i")||!_stricmp(command1, "inv"))
 			inventory();
-		//TODO fix the open command.
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
 			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")||!_stricmp(command3, "door")){
 				if(doorCheck(1,2,7,'e'))
@@ -196,13 +198,29 @@ string getCommand(string input){
 					else
 						cout<<"Nope.\n";
 				}
-				else if(doorCheck(4,7,7,'w'))
+				else if(doorCheck(4,7,7,'w')){
 					if(playerInventory[13] && playerInventory[27] && playerInventory[28]){
+						if(progress==2){
+							cout<<"Door opened.\n";
+							west();
+						}
+						else if(progress!=2){
+							cout<<"As you enter the room the guard spots you and shoots you.\n You are now dead.\n";
+							//gameOver();//TODO CATS
+						}
+					}
+					else
+						cout<<"This door appears to need three keys to unlock.\n";
+				}
+				else if(doorCheck(5,7,7,'w')){
+					if(progress==3){
+						progress=4;
 						cout<<"Door opened.\n";
 						west();
 					}
 					else
-						cout<<"This door appears to need three keys to unlock.\n";
+						cout<<"Nope.\n";
+				}
 			}
 			else
 				cout<<"what would you like to open?\n";
@@ -230,19 +248,39 @@ string getCommand(string input){
 			if(!strcmp(command2,"radio")||!strcmp(command2,"walkie")||!strcmp(command2,"walkie-talkie"))
 				if(playerInventory[11]==true && progress==1){
 					//TODO make this actually call something.
-					progress++;
-					cout<<"you tell the guard to stop.\n";
+					progress=2;
+					cout<<"CLAYTON_HAECKER says: \"You can take your break, I will take guard duty\".\n";
+					cout<<"GUARD says: \"Thanks man, make sure the hostages upstairs dont get out\".\n";
 				}
 				else if(playerInventory[11]==true){
-					cout<<"you only hear static on the other side.\n";
+					cout<<"you only hear snoring on the other side.\n";
+				}
+				else if(playerInventory[11]==false){
+					cout<<"You dont have one of those.\n";
 				}
 		}
-		else if(!_stricmp(command1,"Computer")||!_stricmp(command1,"c"))
+		else if(!_stricmp(command1,"Computer")||!_stricmp(command1,"c")||!_stricmp(command1,"hack")||!_stricmp(command2,"Computer")){
+			if(getLevel()!=5)
 				Computer();
+			else if(bossCheck() && bossHP>0){
+				if(HackMiniGame(getLevel()-bossHP)){
+					bossHP--;
+					Talk(36-bossHP, 36-bossHP);
+					if(bossHP==0){
+						progress=5;
+						cout<<"Dante Has been defeated.\n";
+					}
+				}
+				else
+					bossHP;
+			}
+		}
 		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){
-			if(bombCheck() && progress==2){//TODO change progress to whatever value it should be equal to.
-				cout<<"Bomb disarmed.\n";
-				progress=3;
+			if(bombCheck() && progress==2){
+				if(HackMiniGame(getLevel())){
+					cout<<"Bomb disarmed.\n";
+					progress=3;
+				}
 			}
 			else
 				cout<<"You cant do that here...\n";
@@ -272,6 +310,7 @@ void logo(){
 	string temp;
 	ifstream logo("Assets\\logo.emp");
 	while(getline(logo, temp)){
+		Sleep(75);
 		cout<<temp<<endl;
 	}       
 	cin.get();
@@ -552,12 +591,12 @@ void Talk(int talkst, int talkend){
 			talkid[4] = div+48;
 			talkid[5] = (i%10)+48;
 		}
-		ifstream Dialog("talk.txt");
+		ifstream Dialog("Assets\\Story\\talk.emp");
 		if(!Dialog){
-			cout<<"error opening the talk.txt file\n";
+			cout<<"error opening the talk.emp file\n";
 		}
 		while(!Dialog.eof()){
-			char dialog[256], character[64], talkpin[10];
+			char dialog[256], character[64], talkpin[15];
 			Dialog>>talkpin>>character>>dialog;
 			if(!strcmp(talkid,talkpin)){
 				NoSpaces(character);
@@ -636,7 +675,7 @@ void TalkWho(char command2[]){
 	}else if(!_stricmp(command2,"Jon")||(!_stricmp(command2,"Ingo"))){
 	bool talkTrue = getTalkPos(4,6,6);
 			if(talkTrue){
-				int convo1 = 28, convoend = 29;
+				int convo1 = 28, convoend = 30;
 				Talk(convo1, convoend);
 			}
 			else{
@@ -645,7 +684,7 @@ void TalkWho(char command2[]){
 	}else if(!_stricmp(command2,"Dante")||(!_stricmp(command2,"Gaffe"))){
 		bool talkTrue = getTalkPos(5,2||3||4,6||7||8);
 			if(talkTrue){
-				int convo1 = 30, convoend = 30;
+				int convo1 = 31, convoend = 33;
 				Talk(convo1, convoend);
 			}
 			else{
@@ -654,7 +693,7 @@ void TalkWho(char command2[]){
 	}else if(!_stricmp(command2,"police")||!_stricmp(command2,"officer")||!_stricmp(command2,"cop")){
 		bool talkTrue = getTalkPos(5,1,7);
 			if(talkTrue){
-				int convo1 = 32, convoend = 33;
+				int convo1 = 37, convoend = 39;
 				Talk(convo1, convoend);
 				ending();
 			}
@@ -735,7 +774,7 @@ void Computer(){
 			hacked = HackMiniGame(level);
 			if(hacked){
 				MenuComp(name, personID);
-				return;
+				//return;
 			}
 		}
 		if(p == 11){
@@ -753,8 +792,8 @@ void HackPassword(char answer[], int Level){
 
 
 	for(int i=0; i<=30; i++){ //Randomize lettercodes
-		swap1=rand()%21;
-		swap2=rand()%21;
+		swap1=rand()%20;
+		swap2=rand()%20;
 		holder = lettercode[swap1];
 		lettercode[swap1] = lettercode[swap2];
 		lettercode[swap2] = holder;
@@ -772,7 +811,7 @@ void HackPassword(char answer[], int Level){
 			lineCode[1] = lettercode[holder];
 			lineCode[2] = '\0';
 			holder--;
-			ifstream Comphack("Assets/hack.emp");
+			ifstream Comphack("Assets\\hack.emp");
 			if(!Comphack){
 				cout<<"error opening the items.data file\n";
 			}
@@ -827,13 +866,14 @@ bool HackMiniGame(int Level){
 		}
 		cout<<"Letters matched "<<gright<<endl;
 		cout<<k<<" attempts left before system lockout \n";
-		cout<<answer<<"     DEBUG ANSWER"<<endl; //remove this DEBUG <----------------------=====================================
+		cout<<answer<<"     DEBUG ANSWER"<<endl; //TODO//remove this DEBUG <----------------------=====================================
 	}
 	cout<<"ERROR: INCORRECT PASSWORD\nLOGGING OUT\n";
 	return false;
 }
 
-void BootComp(){//Printed when player first accesses a computer
+//Printed when player first accesses a computer
+void BootComp(){
 	int i, a;
 
 	for(a=1; a<=5; a++){
@@ -908,7 +948,7 @@ void MenuComp(char name[], int personID){//change person to person ID
 					//progress++;
 					//cout<<   Enter plot develpment for act2, declaring where bomb is
 				//else
-					cout<<"You see that the EMP bomb is located on floor 2, and that the doors leading from the stairwell to floor 1 are locked down.";
+					cout<<"You see a guard sitting on a chair, playing with a walkie-talkie, he is armed a large gun.";
 			}
 		}else if((COMPcommand == 'A')||(COMPcommand == 'a')){
 			if(personID == 3){
@@ -917,6 +957,7 @@ void MenuComp(char name[], int personID){//change person to person ID
 		}else if((COMPcommand == 'Q')||(COMPcommand == 'q')){
 			quit = true;
 			cout<<"Logging Off...\n\n\n";
+			cin.ignore();
 			//CheckPos();
 		}else{
 			cout<<"\nVALID COMMAND NOT ENTERED\n\n";
@@ -924,6 +965,7 @@ void MenuComp(char name[], int personID){//change person to person ID
 	}while(!quit);
 }
 
+//The keypad puzzle for the second floor head office.
 bool Keypad(){
 	int code = 1337, guess;
 
@@ -1033,4 +1075,8 @@ void EmailComp(char name[]){
 			}
 		}
 	}while(back == false);
+}
+
+int getProgress(){
+	return progress;
 }

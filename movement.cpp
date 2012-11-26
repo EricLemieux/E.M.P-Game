@@ -6,11 +6,13 @@
 using namespace std;
 
 #include "movement.h"
+#include "bossFight.h"
 
 int playerPos[16][16];
 int itemPos[16][16];
 int level=1;
 bool firstRun=true;
+bool bossFight=false;
 
 void initialise(){
 	//Initialising the players position using the map files.
@@ -25,14 +27,16 @@ void initialise(){
 				char temp;
 				map1>>temp;
 				
-				if(temp=='X')
+				if(temp=='X')//Wall
 					playerPos[i][j]=9;
-				else if(temp=='O')
+				else if(temp=='O')//Open space
 					playerPos[i][j]=0;
-				else if(temp=='P')
+				else if(temp=='P')//Player start
 					playerPos[i][j]=1;
-				else if(temp=='D')
+				else if(temp=='D')//Door
 					playerPos[i][j]=5;
+				else if(temp=='B')//Boss
+					playerPos[i][j]=7;
 			}
 		}
 	}
@@ -160,6 +164,8 @@ void north(){
 						cout<<"There is a wall there.\n";
 					else if(playerPos[i][j]==1 && playerPos[i-1][j]==5)
 						cout<<"you have to open the door before you can walk through it.\n";
+					else if(playerPos[i][j]==1 && playerPos[i-1][j]==7)
+						cout<<"Dante is standing there.\n";
 }
 
 void south(){
@@ -176,6 +182,8 @@ void south(){
 					cout<<"There is a wall there!\n";
 				else if(playerPos[i][j]==1 && playerPos[i+1][j]==5)
 					cout<<"you have to open the door before you can walk through it.\n";
+				else if(playerPos[i][j]==1 && playerPos[i+1][j]==7)
+						cout<<"Dante is standing there.\n";
 }
 
 void east(){
@@ -192,6 +200,8 @@ void east(){
 						cout<<"There is a wall there!\n";
 					else if(playerPos[i][j]==1 && playerPos[i][j+1]==5)
 						cout<<"You have to open the door before you can walk through it.\n";
+					else if(playerPos[i][j]==1 && playerPos[i][j+1]==7)
+						cout<<"Dante is standing there.\n";
 }
 
 void west(){
@@ -208,9 +218,18 @@ void west(){
 					cout<<"There is a wall there!\n";
 				else if(playerPos[i][j]==1 && playerPos[i][j-1]==5)
 					cout<<"You have to open the door before you can walk through it.\n";
+				else if(playerPos[i][j]==1 && playerPos[i][j-1]==7)
+						cout<<"Dante is standing there.\n";
 }
 
 void checkPos(){
+	if (level==5 && playerPos[7][4]==1)
+		bossFight=true;
+	int temp=getProgress();
+	if(temp==5)
+		bossFight=false;
+	if(bossFight)
+		fight();
 	char comparingID[16]="roomX_X_X";
 	char fileName[40]="Assets\\Levels\\LevelX\\levelXrooms.emp";
 	fileName[19]=level+48;
@@ -324,10 +343,29 @@ bool bombCheck(){
 	return false;
 }
 
+bool bossCheck(){
+	if(level==5 && playerPos[7][5]!=1&& playerPos[7][6]!=1&& playerPos[7][7]!=1&& playerPos[7][1]!=1){
+		return true;
+	}
+	return false;
+}
+
 int getLevel(){
 	return level;
 }
 
 void setFirstRun(bool set){
 	firstRun=set;
+}
+
+/*int getPos(){
+	//return *playerPos[][];
+}*/
+
+//Returns if the player is within one square of the boss.
+bool bossClose(int a,int b){
+	if(playerPos[a][b]==1 && (/*Row1*/playerPos[a-1][b-1]==7 || playerPos[a][b-1]==7 || playerPos[a+1][b-1]==7 || /*Row2*/playerPos[a-1][b]==7 || playerPos[a][b]==7 || playerPos[a+1][b]==7||/*Row3*/playerPos[a-1][b+1]==7 || playerPos[a][b+1]==7 || playerPos[a+1][b+1]==7))
+		return true;
+	else 
+		return false;
 }
