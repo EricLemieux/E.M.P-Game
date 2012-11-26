@@ -12,7 +12,6 @@ using namespace std;
 
 #include "movement.h"
 #include "story.h"
-#include "bossFight.h"
 
 #define NUM 64
 
@@ -221,7 +220,7 @@ string getCommand(string input){
 					else
 						cout<<"Nope.\n";
 				}
-				else if(doorCheck(5,7,1,'w')){//TODO reconfirm cords
+				else if(doorCheck(5,2,7,'w')){
 					if(progress==5){
 						progress=6;
 						cout<<"Door opened.\n";
@@ -277,12 +276,12 @@ string getCommand(string input){
 					Talk(36-bossHP, 36-bossHP);
 					if(bossHP==0){
 						progress=5;
-						setPos(7,4,0);
+						setPos(7,3,0);
 						cout<<"Dante Has been defeated.\n";
 					}
 				}
 				else
-					bossHP;
+					bossHP=bossHP;
 			}
 		}
 		else if(!strcmp(command1,"disarm")||!strcmp(command1,"deactivate")){
@@ -589,6 +588,13 @@ void NewLine(char a[]){
 	for(int i=0; i<strlen(a); i++){
 		if(a[i] == '$')
 		a[i] = '\n';
+	}
+}
+
+void Apostrophe(char thing[]){
+	for(int i=0;i<strlen(thing);i++){
+		if(thing[i]=='#')
+		thing[i]='\'';
 	}
 }
 
@@ -1064,6 +1070,8 @@ void EmailComp(char name[]){
 			NewLine(header);
 			NoSpaces(header);
 			NoSpaces(message);
+			Apostrophe(header);
+			Apostrophe(message);
 			switch(input){
 			case '1':
 					if(!strcmp(subject,subject1)){

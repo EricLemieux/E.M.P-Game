@@ -6,7 +6,6 @@
 using namespace std;
 
 #include "movement.h"
-#include "bossFight.h"
 
 int playerPos[16][16];
 int itemPos[16][16];
@@ -228,8 +227,8 @@ void checkPos(){
 	int temp=getProgress();
 	if(temp==5)
 		bossFight=false;
-	if(bossFight)
-		fight();
+	/*if(bossFight)
+		fight();*/
 	char comparingID[16]="roomX_X_X";
 	char fileName[40]="Assets\\Levels\\LevelX\\levelXrooms.emp";
 	fileName[19]=level+48;
