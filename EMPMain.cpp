@@ -181,26 +181,30 @@ string getCommand(string input){
 			inventory();
 		else if(!_stricmp(command1, "open")||!_stricmp(command1, "o")){
 			if(!_stricmp(command2, "door")||!_stricmp(command2, "d")||!_stricmp(command3, "door")){
-				if(doorCheck(1,2,7,'e'))
+				if(doorCheck(1,2,7,'e')){
 					if(playerInventory[13]){
 						cout<<"Door opened.\n";
+						openDoor(2,7,'e');
 						east();
 					}
 					else
 						cout<<"This door appears to be locked.\n";
+				}
 				else if(doorCheck(2,3,7,'w')){
 					bool keycode = Keypad();
 					if(keycode){
 						cout<<"Door opened.\n";
+						openDoor(3,7,'w');
 						west();
 					}
 					else
-						cout<<"Nope.\n";
+						cout<<"\n";
 				}
 				else if(doorCheck(4,7,7,'w')){
 					if(playerInventory[13] && playerInventory[27] && playerInventory[28]){
 						if(progress==2){
 							cout<<"Door opened.\n";
+							openDoor(7,7,'w');
 							west();
 						}
 						else if(progress!=2){
@@ -215,6 +219,7 @@ string getCommand(string input){
 					if(progress==3){
 						progress=4;
 						cout<<"Door opened.\n";
+						openDoor(7,7,'w');
 						west();
 					}
 					else
@@ -224,6 +229,7 @@ string getCommand(string input){
 					if(progress==5){
 						progress=6;
 						cout<<"Door opened.\n";
+						openDoor(2,7,'w');
 						west();
 					}
 					else
@@ -622,6 +628,8 @@ void Talk(int talkst, int talkend){
 			if(!strcmp(talkid,talkpin)){
 				NoSpaces(character);
 				NoSpaces(dialog);
+				NewLine(dialog);
+				Apostrophe(dialog);
 				cout<<endl<<character<<dialog<<"\n";
 			}
 		}
@@ -703,14 +711,18 @@ void TalkWho(char command2[]){
 				cout<<command2<<command3<<" isn't here... \n\n";
 			}
 	}else if(!_stricmp(command2,"Dante")||(!_stricmp(command2,"Gaffe"))){
-		bool talkTrue = getTalkPos(5,2||3||4,6||7||8);
-			if(talkTrue){
-				int convo1 = 31, convoend = 33;
-				Talk(convo1, convoend);
+		bool talkTrue;
+		for(int i = 2; i<=4; i++){
+			for(int k = 5; k<=8; k++){
+				talkTrue = getTalkPos(5,i,k);
+				if(talkTrue){
+					int convo1 = 31, convoend = 33;
+					Talk(convo1, convoend);
+				}
 			}
-			else{
-				cout<<command2<<command3<<" isn't here... \n\n";
-			}
+	}
+  if(!talkTrue)
+   cout<<command2<<command3<<" isn't here... \n\n";
 	}else if(!_stricmp(command2,"police")||!_stricmp(command2,"officer")||!_stricmp(command2,"cop")){
 		bool talkTrue = getTalkPos(5,1,7);
 			if(talkTrue){
@@ -795,8 +807,8 @@ void Computer(){
 			hacked = HackMiniGame(level);
 			if(hacked){
 				MenuComp(name, personID);
-				//return;
 			}
+			return;
 		}
 		if(p == 11){
 			cout<<"\nThere's no computer here to use.\n\n";

@@ -322,17 +322,28 @@ bool getTalkPos(int a,int b,int c){
 
 bool doorCheck(int a,int b,int c,char d){
 	if(level==a && playerPos[c][b]==1){
-		if(d=='e')
-			playerPos[c][b+1]=0;
-		else if(d=='w')
-			playerPos[c][b-1]=0;
-		else if(d=='n')
-			playerPos[c-1][b]=0;
-		else if(d=='s')
-			playerPos[c+1][b]=0;
-		return true;
+		if(d=='e' && playerPos[c][b+1]==5)
+			return true;
+		else if(d=='w' && playerPos[c][b-1]==5)
+			return true;
+		else if(d=='n' && playerPos[c-1][b]==5)
+			return true;
+		else if(d=='s' && playerPos[c+1][b]==5)
+			return true;
 	}
 	return false;
+}
+
+//Sets the Door infront of the player to be open.
+void openDoor(int a,int b,char c){
+	if(c=='e')
+		playerPos[b][a+1]=0;
+	else if(c=='w')
+		playerPos[b][a-1]=0;
+	else if(c=='n')
+		playerPos[b-1][a]=0;
+	else if(c=='s')
+		playerPos[b+1][a]=0;
 }
 
 bool bombCheck(){

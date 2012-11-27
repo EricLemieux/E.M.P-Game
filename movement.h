@@ -14,6 +14,7 @@ void changeLevel(char c);
 void drawMap();
 bool getTalkPos(int a,int b, int c);
 void NoSpaces(char thing[]);
+void openDoor(int a,int b,char c);
 bool doorCheck(int a,int b,int c,char d);
 int getLevel();
 void setFirstRun(bool set);

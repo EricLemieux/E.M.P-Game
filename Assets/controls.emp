@@ -1,11 +1,11 @@
-Directional Movements: North, South, East West. 
-Vertical Movements-Up, Down.
-Examine(item)- used to examine objects.
-Use/open(item)- used to use objects.
-Look- used to look around, showing what the room you are in looks like.
-Inventory- used to bring up a list of items that you currently have.
-Pick up(item)- used to pick up items.
+Directional Movements: North, South, East West. [N,S,E,W]
+Vertical Movements-Up, Down. [U,D]
+Examine(item)- used to examine objects.[VIEW,DESCRIBE,EXAMINE]
+Use/open(item)- used to use objects. [USE,O]
+Look- used to look around, showing what the room you are in looks like.[L]
+Inventory- used to bring up a list of items that you currently have.[I]
+Pick up(item)- used to pick up items.[GRAB,PICK,TAKE]
 Drop(item)- used to drop items
-Tell(Name)- used to converse with other NPC’s.
-Help- used to contact Anthony for helpful hints
-Give(Item)- used to give an item to someone.
+Talk(Name)- used to converse with other NPC’s. [T]
+Help- used to contact Anthony for helpful hints(with certain item)[H]
+Computer- Access nearest computer.[C,HACK]
