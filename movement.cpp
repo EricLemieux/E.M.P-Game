@@ -80,15 +80,15 @@ void initialise(){
 					itemPos[i][j]=5;
 				else if(temp=='S')//security camera
 					itemPos[i][j]=6;
-				else if(temp=='A')//anthony parker
+				else if(temp=='A')//Anthony parker
 					itemPos[i][j]=7;
-				else if(temp=='a')//alan ford
+				else if(temp=='a')//Alan ford
 					itemPos[i][j]=8;
-				else if(temp=='s')//samantha weiler
+				else if(temp=='s')//Samantha Weiler
 					itemPos[i][j]=9;
 				else if(temp=='B')//box
 					itemPos[i][j]=10;
-				else if(temp=='W')//walkie talkie
+				else if(temp=='W')//walkie-talkie
 					itemPos[i][j]=11;
 				else if(temp=='$')//screwdriver
 					itemPos[i][j]=12;
@@ -96,7 +96,7 @@ void initialise(){
 					itemPos[i][j]=13;
 				else if(temp=='C')//couch
 					itemPos[i][j]=14;
-				else if(temp=='t')//tv
+				else if(temp=='t')//TV
 					itemPos[i][j]=15;
 				else if(temp=='F')//fridge
 					itemPos[i][j]=16;
@@ -132,7 +132,7 @@ void initialise(){
 					itemPos[i][j]=31;
 				else if(temp=='G')//big guard
 					itemPos[i][j]=32;
-				else if(temp=='o')//omonous door
+				else if(temp=='o')//ominous door
 					itemPos[i][j]=33;
 				else if(temp=='h')//HLC laser handcuffs
 					itemPos[i][j]=34;
@@ -276,6 +276,19 @@ int checkItemPos(char sym){
 	return 0; 
 }
 
+void setItemPos(int itemID, char order){
+	for(int i=0;i<16;i++)
+		for(int j=0;j<16;j++)
+			if(playerPos[i][j]==1){
+				if(order=='-'){
+					itemPos[i][j]=itemID;
+					cout<<"You droped a "<<nameItem(itemPos[i][j])<<".\n";
+				}
+				else if(order=='+')
+					itemPos[i][j]=0;
+			}
+}
+
 //Not being used.
 void drawArray(){
 	for(int i=0;i<16;i++)
@@ -334,7 +347,7 @@ bool doorCheck(int a,int b,int c,char d){
 	return false;
 }
 
-//Sets the Door infront of the player to be open.
+//Sets the Door in front of the player to be open.
 void openDoor(int a,int b,char c){
 	if(c=='e')
 		playerPos[b][a+1]=0;
@@ -347,7 +360,7 @@ void openDoor(int a,int b,char c){
 }
 
 bool bombCheck(){
-	if(level==4 && playerPos[5][5]==1){
+	if(level==4 && playerPos[4][5]==1){
 		return true;
 	}
 	return false;

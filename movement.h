@@ -22,6 +22,7 @@ bool bombCheck();
 bool bossCheck();
 int getPos();
 void setPos(int a,int b,int c);
+void setItemPos(int itemID, char order);
 //bool bossClose(int a,int b);
 
 string nameItem(int num);

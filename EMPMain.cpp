@@ -23,7 +23,7 @@ void openFile();
 void inventory();
 void controls();
 void describeItem(char item[16]);
-void dropItem(char item[16]);
+void dropItem(char item[16], char item2[16]);
 void printRooms();
 void Talk(int talkst, int talkend);
 void TalkWho(char command2[]);
@@ -34,15 +34,17 @@ void BootComp();
 void MenuComp(char name[], int personID);
 bool Keypad();
 void EmailComp(char name[]);
+void Apostrophe(char thing[]);
 
 bool quit=false;
 char userInput[64];
 char command1[NUM], command2[NUM], command3[NUM];
 bool playerInventory[64];
+const bool falseItem = false;
 int progress=0;
 int bossHP=3;
 
-//Breaks down the player's input into smaller commands that can be proccesed.
+//Breaks down the player's input into smaller commands that can be processed.
 void splitString(char c[]){
 	char firstWord[NUM] = " ";
 	char secondWord[NUM] = " ";
@@ -104,13 +106,12 @@ void splitString(char c[]){
 	cout<<command1<<endl;*/
 }
 
-//The main initialiser for the begining of the game. 
+//The main initialise for the beginning of the game. 
 int main(int argc, void *argv[]){
 	system("color 0a");
 
 	for(int i=0;i<64;i++)
 		playerInventory[i]=false;
-	playerInventory[0]=true;
 
 	logo();
 	mainMenu();
@@ -207,10 +208,8 @@ string getCommand(string input){
 							openDoor(7,7,'w');
 							west();
 						}
-						else if(progress!=2){
-							cout<<"As you enter the room the guard spots you and shoots you.\n You are now dead.\n";
-							//gameOver();//TODO CATS
-						}
+						else if(progress!=2)
+							cout<<"You see a guard sitting on a chair, playing with a WALKIE-TALKIE behind a large security door.  He is armed a large gun. \nEntering that door with him there might be a death wish. Maybe, you can talk to him on his WALKIE-TALKIE.\n";
 					}
 					else
 						cout<<"This door appears to need three keys to unlock.\n";
@@ -242,13 +241,16 @@ string getCommand(string input){
 		else if(!_stricmp(command1,"describe")||!_stricmp(command1,"view")||!_stricmp(command1,"examine"))
 			describeItem(command2);
 		else if(!strcmp(command1,"drop"))
-			dropItem(command2);
+			dropItem(command2,command3);
 		else if(!strcmp(command1,"grab")||!strcmp(command1,"pick")||!strcmp(command1,"take")){
 			int temp = checkItemPos('-');
-			if(temp!=0){
+			if(temp==11 || temp==13 || temp==27 || temp==28){
+				setItemPos(0,'+');
 				playerInventory[temp]=true;
 				cout<<endl<<"You picked up a "<<nameItem(temp);
 			}
+			else if(temp!=0)
+				cout<<"You can't pick that up.\n";
 		}
 		else if(!_stricmp(command1,"talk")||!_stricmp(command1,"t")||!_stricmp(command1,"speak")||!_stricmp(command1,"tell")){
 			if(!_stricmp(command2,"to")||!_stricmp(command2,"with"))
@@ -320,15 +322,16 @@ string processCommand(string userCommand){
 	return ("");
 }
 
-//Outputs the Fifth Gameway logo when the player first starts the game.
+//Outputs the Fifth Gateway logo when the player first starts the game.
 void logo(){
 	string temp;
 	ifstream logo("Assets\\logo.emp");
 	while(getline(logo, temp)){
 		Sleep(75);
 		cout<<temp<<endl;
-	}       
-	cin.get();
+	}
+	//cin.ignore(100,'\n');
+	Sleep(300);
 }
 
 //TODO Remove
@@ -366,7 +369,7 @@ void openFile(){
 	system("pause");
 }
 
-//Outputs the main menu for the player at the beginging of the game.
+//Outputs the main menu for the player at the beginning of the game.
 void mainMenu(){
 	string inputString;
 	setFirstRun(true);
@@ -414,8 +417,9 @@ void mainMenu(){
 		goto mainMenu;
 	}
 	else{
-		cout<<"Sorry I dont understand what you entered.\n";
-		cin.ignore();
+		cout<<"Sorry I don't understand what you entered.\n";
+		//cin.ignore();
+		goto mainMenu;
 	}
 }
 
@@ -503,29 +507,51 @@ string nameItem(int num){
 
 //Outputs the description for the item, found in the items file.
 void describeItem(char item[16]){
-	if(!_stricmp(item,"red"))
-		strcpy(item,"red_keycard");
-	else if(!_stricmp(item,"blue"))
-		strcpy(item,"blue_keycard");
-	else if(!_stricmp(item,"yellow"))
-		strcpy(item,"yellow_keycard");
+	int counter = 0;
+	int temp = checkItemPos('-');
+	char itemID[10]="itemID_XX";
+	if(temp<10){
+		itemID[7]='0';
+		itemID[8]=temp+48;
+	}
+	else if(temp<20){
+		itemID[7]='1';
+		itemID[8]=temp+38;
+	}
+	else if(temp<30){
+		itemID[7]='2';
+		itemID[8]=temp+28;
+	}
+	else if(temp<40){
+		itemID[7]='3';
+		itemID[8]=temp+18;
+	}
 
 	ifstream itemFile("Assets\\items.emp");
 	while(!itemFile.eof()){
 		char ID[40],itemName[32],description[256];
 		itemFile>>ID>>itemName>>description;
 
+		NoSpaces(itemName);
 		NoSpaces(description);
 		NewLine(description);
+		Apostrophe(description);
 		
-		if(!strcmp(item,itemName))
-			cout<<"Description: "<<description<<endl;
+		if(!_stricmp(ID,itemID)){
+			if(temp!=0)
+				cout<<"Description: "<<description<<endl;
+		}
+		else{
+			if(counter==37)
+				cout<<"The "<<item<<" is not here.\n";
+			counter++;
+		}
 	}
 }
 
 //Drops the item from the players inventory.
-void dropItem(char item[16]){
-	if(!strcmp(item,"red"))
+void dropItem(char item[16], char item2[16]){
+	if(!strcmp(item,"red") || (!strcmp(item,"red")&&!strcmp(item2,"key")) || (!strcmp(item,"red")&&!strcmp(item2,"keycard")))
 		strcpy(item,"red_keycard");
 	if(!strcmp(item,"blue"))
 		strcpy(item,"blue_keycard");
@@ -550,6 +576,7 @@ void dropItem(char item[16]){
 		if(!strcmp(item,itemName)){
 			cout<<"droping item.\n";
 			playerInventory[numID]=false;
+			setItemPos(numID,'-');
 		}
 	}
 }
@@ -721,13 +748,14 @@ void TalkWho(char command2[]){
 				}
 			}
 	}
-  if(!talkTrue)
-   cout<<command2<<command3<<" isn't here... \n\n";
+	if(!talkTrue)
+	cout<<command2<<command3<<" isn't here... \n\n";
 	}else if(!_stricmp(command2,"police")||!_stricmp(command2,"officer")||!_stricmp(command2,"cop")){
 		bool talkTrue = getTalkPos(5,1,7);
 			if(talkTrue){
 				int convo1 = 37, convoend = 39;
 				Talk(convo1, convoend);
+				cout<<endl<<endl<<endl;
 				ending();
 			}
 			else{
@@ -738,7 +766,7 @@ void TalkWho(char command2[]){
 }
 
 
-//Quits the gameloop and therfore the game
+//Quits the game loop and therefore the game
 string quitGame(){
 	quit=true;
 	return "";
@@ -768,7 +796,7 @@ void Computer(){
 				strcat_s(name,"AnthonyParker");
 			}break;
 		case 4:
-			Compute = getTalkPos(2,8,4);
+			Compute = getTalkPos(2,4,8);
 			if(Compute){
 				strcat_s(name,"SamanthaWeiler");
 			}break;
@@ -882,7 +910,7 @@ bool HackMiniGame(int Level){
 
 	cout<<"\nENTER PASSWORD\n";
 	//3 guesses
-	for(int k=3; k>=0; k--){ //k is number of attempts
+	for(int k=4; k>=0; k--){ //k is number of attempts
 		cin.getline(guess,10);
 		for(int i=0; i<=Level+2; i++){
 			guess[i] = toupper(guess[i]);
@@ -899,7 +927,7 @@ bool HackMiniGame(int Level){
 		}
 		cout<<"Letters matched "<<gright<<endl;
 		cout<<k<<" attempts left before system lockout \n";
-		cout<<answer<<"     DEBUG ANSWER"<<endl; //TODO//remove this DEBUG <----------------------=====================================
+		//cout<<answer<<"     DEBUG ANSWER"<<endl; //TODO//remove this DEBUG <----------------------=====================================
 	}
 	cout<<"ERROR: INCORRECT PASSWORD\nLOGGING OUT\n";
 	return false;
@@ -969,8 +997,8 @@ void MenuComp(char name[], int personID){//change person to person ID
 		if((COMPcommand == 'h')||(COMPcommand == 'H')){
 			cout<<"\nType the first letter of a menu command to access that command.  To access \n[E]mail type 'E'.  'Q' is to quit interface.  To access commands preceded by a \nnumber, type the number. To access [1]FirstE-mail, type 1. \n\n";
 		}else if((COMPcommand == 'E')||(COMPcommand == 'e')){
-			if (personID == 1);		
-			EmailComp(name);
+			if (personID == 1)	
+				EmailComp(name);
 		}else if((COMPcommand == 'C')||(COMPcommand == 'c')){
 			if(personID == 2){
 				cout<<"0700: An employee enters the Cardinal Data Center (CDC). He is followed by another carrying a bag.\n0710: The employee greets the security guard and enters the elevator. The man following guns down the security guard and moves the body. The CDC’s security is compromised.\n0730: The gunman returns to the security post in a security guard uniform.\n0735: The CDC’s freight door is opened, a large vehicle enters. Three persons enter the CDC through the front.\n0730-0800: Eight employees enter the building.\n0805: The building’s security system is trigger. The building is locked down.\n0815: The press are contacted about an EMP within the CDC. A radical neo-Luddite organization issues a manifesto and declares every hour a demand will be made.\n0845: Police lock down the surrounding areas. An evacuation takes place.\n0900: First Demand: Remove police snipers, every rebel agent has a “dead-man trigger”. If one dies the EMP will be detonated.\n0930: Police become aware of multiple hostages inside the CDC.\n1000: Second demand was not made. Police attempt contact.\n";
@@ -991,7 +1019,7 @@ void MenuComp(char name[], int personID){//change person to person ID
 			quit = true;
 			cout<<"Logging Off...\n\n\n";
 			cin.ignore();
-			//CheckPos();
+			checkPos();
 		}else{
 			cout<<"\nVALID COMMAND NOT ENTERED\n\n";
 		}
@@ -1026,39 +1054,39 @@ void EmailComp(char name[]){
 
 	switch(name[1]){
 	case 'A':
-		strcat(subject1,"SPAM");
-		strcat(subject2,"Regarding_Goldstein");
-		strcat(subject3,"Try_GRUE_game");
+		strncat_s(subject1,"SPAM",64);
+		strncat_s(subject2,"Regarding_Goldstein",64);
+		strncat_s(subject3,"Try_GRUE_game",64);
 		break;
 	case 'M':
-		strcat(subject1,"US");
-		strcat(subject2,"XXX-HOTLIVEGIRLS-XXX(SPAM)");
-		strcat(subject3,"RE:SPAM");
+		strncat_s(subject1,"US",64);
+		strncat_s(subject2,"XXX-HOTLIVEGIRLS-XXX(SPAM)",64);
+		strncat_s(subject3,"RE:SPAM",64);
 		break;
 	case 'S':
-		strcat(subject1,"Concerning_Cafeteria_Microwave");
-		strcat(subject2,"RE:Regarding_Goldstein");
-		strcat(subject3,"Can_I_has_Access?");
+		strncat_s(subject1,"Concerning_Cafeteria_Microwave",64);
+		strncat_s(subject2,"RE:Regarding_Goldstein",64);
+		strncat_s(subject3,"Can_I_has_Access?",64);
 		break;
 	case 'C':
-		strcat(subject1,"Concerning_Cafeteria_Microwave");
-		strcat(subject2,"All_Staff");
-		strcat(subject3,"I_Know");
+		strncat_s(subject1,"Concerning_Cafeteria_Microwave",64);
+		strncat_s(subject2,"All_Staff",64);
+		strncat_s(subject3,"I_Know",64);
 		break;
 	case 'J':
-		strcat(subject1,"Concerning_Cafeteria_Microwave");
-		strcat(subject2,"All_Staff");
-		strcat(subject3,"PLAN");
+		strncat_s(subject1,"Concerning_Cafeteria_Microwave",64);
+		strncat_s(subject2,"All_Staff",64);
+		strncat_s(subject3,"PLAN",64);
 		break;
 	case 'T':
-		strcat(subject1,"Concerning_Cafeteria_Microwave");
-		strcat(subject2,"All_Staff");
-		strcat(subject3,"Try_GRUE_game");
+		strncat_s(subject1,"Concerning_Cafeteria_Microwave",64);
+		strncat_s(subject2,"All_Staff",64);
+		strncat_s(subject3,"Try_GRUE_game",64);
 		break;
 	case 'F':
-		strcat(subject1,"Concerning_Cafeteria_Microwave");
-		strcat(subject2,"All_Staff");
-		strcat(subject3,"Clean-up");
+		strncat_s(subject1,"Concerning_Cafeteria_Microwave",64);
+		strncat_s(subject2,"All_Staff",64);
+		strncat_s(subject3,"Clean-up",64);
 		break;
 	}
 
@@ -1082,6 +1110,7 @@ void EmailComp(char name[]){
 			NewLine(header);
 			NoSpaces(header);
 			NoSpaces(message);
+			NewLine(message);
 			Apostrophe(header);
 			Apostrophe(message);
 			switch(input){
